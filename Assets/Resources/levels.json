@@ -1,0 +1,98 @@
+[
+   {
+       "name": "Easy",
+       "waves": 10,
+       "spawns": [
+            {
+                "enemy": "zombie",
+                "count": "8 wave 2 * +",
+                "hp": "base 5 wave * +",
+                "delay": "0.5",
+                "sequence": [2,3,4],
+                "location": "random"
+            },
+            {
+                "enemy": "skeleton",
+                "count": "2 wave 2 / +",
+                "hp": "30 wave *",
+                "sequence": [2, 2],
+                "location": "random red"
+            },
+            {
+                "enemy": "warlock",
+                "count": "wave 4 /",
+                "hp": "100 25 wave * +",
+                "location": "random bone"
+            }
+        ]
+   },
+   {
+       "name": "Medium",
+       "waves": 15,
+       "spawns": [
+            {
+                "enemy": "zombie",
+                "count": "10 wave 3 * +",
+                "hp": "25 wave *",
+                "delay": "0.4",
+                "sequence": [3,4,5],
+                "location": "random"
+            },
+            {
+                "enemy": "skeleton",
+                "count": "3 wave +",
+                "hp": "25 wave *",
+                "sequence": [2, 2],
+                "location": "random red"
+            },
+            {
+                "enemy": "warlock",
+                "count": "1 wave 3 / +",
+                "hp": "75 50 wave * +",
+                "damage": "base 10 +",
+                "location": "random bone"
+            },
+            {
+              "enemy": "ghost",
+              "count": "wave 2 /",
+              "hp": "base 10 wave * +",
+              "sequence": [1, 2],
+              "location": "random green"
+            }
+       ]
+   },
+   {
+       "name": "Endless",
+       "spawns": [
+            {
+                "enemy": "zombie",
+                "count": "12 wave 4 * +",
+                "hp": "15 wave *",
+                "delay": "0.35",
+                "sequence": [4,5,6],
+                "location": "random"
+            },
+            {
+                "enemy": "skeleton",
+                "count": "4 wave 2 * +",
+                "hp": "20 wave *",
+                "sequence": [2, 2],
+                "location": "random red"
+            },
+            {
+                "enemy": "warlock",
+                "count": "1 wave 5 / +",
+                "hp": "75 15 wave * +",
+                "damage": "base 5 -",
+                "location": "random bone"
+            },
+            {
+                "enemy": "medusa",
+                "count": "wave 15 /",
+                "hp": "75 50 wave * +",
+                "damage": "base 50 +",
+                "location": "random green"
+            }
+       ]
+   }
+]

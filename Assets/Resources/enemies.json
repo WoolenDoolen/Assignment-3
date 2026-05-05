@@ -1,0 +1,37 @@
+[
+   {
+       "name": "zombie",
+       "sprite": 0,
+       "hp": 20,
+       "speed": 7,
+       "damage": 5
+   },
+   {
+       "name": "skeleton",
+       "sprite": 1,
+       "hp": 30,
+       "speed": 9,
+       "damage": 10
+   },  
+   {
+       "name": "warlock",
+       "sprite": 19,
+       "hp": 80,
+       "speed": 5,
+       "damage": 18
+   },
+   {
+       "name": "medusa",
+       "sprite": 7,
+       "hp": 500,
+       "speed": 5,
+       "damage": 100
+   },
+   {
+       "name": "ghost",
+       "sprite": 10,
+       "hp": 40,
+       "speed": 7,
+       "damage": 8
+   }
+]

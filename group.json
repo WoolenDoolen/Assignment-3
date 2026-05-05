@@ -1,0 +1,18 @@
+{
+  "team": [
+    {
+      "firstname": "Todd",
+      "lastname": "Crandell",
+      "github": "WoolenDoolen",
+      "email": "tcrandel@ucsc.edu"
+    },
+    {
+      "firstname": "",
+      "lastname": "",
+      "github": "ValerieVATS",
+      "email": ""
+    }
+  ],
+  "repository": "",
+  "commit": "877dc4a755ac5e92be0851299f3d6595f7891a3e"
+}
