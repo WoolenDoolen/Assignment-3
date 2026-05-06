@@ -59,12 +59,12 @@ public class EnemySpawner : MonoBehaviour
         spawning = false;
         GameManager.Instance.ClearEnemies();
         level_selector.gameObject.SetActive(false);
-        // this is not nice: we should not have to be required to tell the player directly that the level is starting
-        GameManager.Instance.player.GetComponent<PlayerController>().StartLevel();
         LevelSelector.Instance.Difficulty = levelname;
         
         Levels level = LevelSelector.Instance.GetLevel(levelname);
         GameManager.Instance.NewRun(levelname, level == null ? 0 : level.waves);
+        // this is not nice: we should not have to be required to tell the player directly that the level is starting
+        GameManager.Instance.player.GetComponent<PlayerController>().StartLevel();
         GameManager.Instance.state = GameManager.GameState.COUNTDOWN;
         dict["wave"] = 1;
         
@@ -102,6 +102,12 @@ public class EnemySpawner : MonoBehaviour
         spawning = true;
 
         GameManager.Instance.wave = dict["wave"]; //update gamemanager
+        PlayerController player = GameManager.Instance.player.GetComponent<PlayerController>();
+        if (player != null)
+        {
+            player.ApplyWaveStats();
+        }
+
         GameManager.Instance.state = GameManager.GameState.COUNTDOWN;
         GameManager.Instance.countdown = 3;
         for (int i = 3; i > 0; i--)
