@@ -76,6 +76,27 @@
        "damage_multiplier": "0.75",
        "mana_adder": "10",
        "projectile_trajectory": "homing"
+   },
+   "mana_stream": {
+       "name": "mana-efficient",
+       "description": "Reduced mana cost, with a slightly longer cooldown.",
+       "mana_multiplier": "0.75",
+       "cooldown_multiplier": "1.15"
+   },
+   "overclocked": {
+       "name": "overclocked",
+       "description": "Lower cooldown and faster projectile speed, at increased mana cost.",
+       "cooldown_multiplier": "0.7",
+       "speed_multiplier": "1.25",
+       "mana_multiplier": "1.25"
+   },
+   "nova_burst": {
+       "name": "bursting",
+       "description": "On hit, the spell releases small arcane shards in every direction.",
+       "mana_multiplier": "1.35",
+       "on_hit_projectiles": "6",
+       "on_hit_damage": "4 power 20 / +",
+       "on_hit_projectile": {"trajectory": "straight", "speed": "12", "sprite": 0, "lifetime": "0.2"}
    }
 
 }

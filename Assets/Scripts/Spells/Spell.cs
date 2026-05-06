@@ -122,6 +122,7 @@ public class SpellCastProfile
     public float volleySpreadDegrees;
     public int secondaryDamage;
     public ProjectileSpellData secondaryProjectile;
+    public int secondaryProjectileCount;
     public int onHitProjectiles;
     public int onHitDamage;
     public ProjectileSpellData onHitProjectile;
@@ -140,35 +141,45 @@ public class Spell
     public float last_cast;
     public SpellCaster owner;
     public Hittable.Team team;
+    protected SpellDefinition baseDefinition;
+    protected List<SpellDefinition> modifiers;
 
     public Spell(SpellCaster owner)
+        : this(owner, null, new List<SpellDefinition>())
+    {
+    }
+
+    public Spell(SpellCaster owner, SpellDefinition baseDefinition, List<SpellDefinition> modifiers)
     {
         this.owner = owner;
+        this.baseDefinition = baseDefinition;
+        this.modifiers = modifiers == null ? new List<SpellDefinition>() : new List<SpellDefinition>(modifiers);
     }
 
     public string GetName()
     {
-        return "Bolt";
+        SpellCastProfile profile = BuildProfile();
+        return profile.name;
     }
 
     public int GetManaCost()
     {
-        return 10;
+        return BuildProfile().manaCost;
     }
 
     public int GetDamage()
     {
-        return 100;
+        return BuildProfile().damage;
     }
 
     public float GetCooldown()
     {
-        return 0.75f;
+        return BuildProfile().cooldown;
     }
 
     public virtual int GetIcon()
     {
-        return 0;
+        return BuildProfile().icon;
     }
 
     public bool IsReady()
@@ -179,17 +190,228 @@ public class Spell
     public virtual IEnumerator Cast(Vector3 where, Vector3 target, Hittable.Team team)
     {
         this.team = team;
-        GameManager.Instance.projectileManager.CreateProjectile(0, "straight", where, target - where, 15f, OnHit);
+        last_cast = Time.time;
+        SpellCastProfile profile = BuildProfile();
+        yield return CastVolley(where, target, team, profile);
         yield return new WaitForEndOfFrame();
     }
 
-    void OnHit(Hittable other, Vector3 impact)
+    protected SpellCastProfile BuildProfile()
     {
-        if (other.team != team)
+        SpellCastProfile profile = new SpellCastProfile();
+
+        if (baseDefinition == null)
         {
-            other.Damage(new Damage(GetDamage(), Damage.Type.ARCANE));
+            profile.name = "Bolt";
+            profile.description = "A straight-flying bolt.";
+            profile.icon = 0;
+            profile.damage = 100;
+            profile.manaCost = 10;
+            profile.cooldown = 0.75f;
+            profile.projectile = new ProjectileSpellData(0, "straight", 15f);
+            return profile;
         }
 
+        profile.name = baseDefinition.GetString("name", baseDefinition.id);
+        profile.description = baseDefinition.GetString("description", "");
+        profile.icon = baseDefinition.EvaluateInt("icon", owner, 0);
+
+        JObject damage = baseDefinition.GetObject("damage");
+        profile.damage = SpellDefinition.EvaluateInt(damage == null ? null : damage["amount"], owner, 10);
+        profile.damageType = Damage.TypeFromString(damage == null ? "arcane" : damage["type"] == null ? "arcane" : damage["type"].ToString());
+        profile.manaCost = baseDefinition.EvaluateInt("mana_cost", owner, 10);
+        profile.cooldown = baseDefinition.EvaluateFloat("cooldown", owner, 1f);
+        profile.projectile = ProjectileSpellData.FromJson(baseDefinition.GetObject("projectile"), owner, new ProjectileSpellData(0, "straight", 8f));
+
+        int n = Mathf.Max(1, baseDefinition.EvaluateInt("N", owner, 1));
+        if (baseDefinition.attributes["spray"] != null)
+        {
+            profile.projectileCount = n;
+            profile.projectileSpreadDegrees = baseDefinition.EvaluateFloat("spray", owner, 0.3f) * Mathf.Rad2Deg;
+        }
+
+        if (baseDefinition.GetObject("secondary_projectile") != null)
+        {
+            profile.secondaryProjectile = ProjectileSpellData.FromJson(baseDefinition.GetObject("secondary_projectile"), owner, profile.projectile);
+            profile.secondaryDamage = baseDefinition.EvaluateInt("secondary_damage", owner, Mathf.Max(1, profile.damage / 4));
+            profile.secondaryProjectileCount = n;
+        }
+
+        ApplyModifiers(profile);
+        return profile;
     }
 
+    protected void ApplyModifiers(SpellCastProfile profile)
+    {
+        foreach (SpellDefinition modifier in modifiers)
+        {
+            profile.name = modifier.GetString("name", modifier.id) + " " + profile.name;
+
+            profile.damage = ApplyIntModifier(profile.damage, modifier, "damage_multiplier", "damage_adder", 1);
+            profile.manaCost = ApplyIntModifier(profile.manaCost, modifier, "mana_multiplier", "mana_adder", 0);
+            profile.cooldown = ApplyFloatModifier(profile.cooldown, modifier, "cooldown_multiplier", "cooldown_adder", 0.05f);
+
+            if (profile.projectile != null)
+            {
+                profile.projectile.speed = ApplyFloatModifier(profile.projectile.speed, modifier, "speed_multiplier", "speed_adder", 0.1f);
+
+                string trajectory = modifier.GetString("projectile_trajectory", "");
+                if (!string.IsNullOrWhiteSpace(trajectory))
+                {
+                    profile.projectile.trajectory = trajectory;
+                }
+            }
+
+            if (modifier.attributes["delay"] != null)
+            {
+                profile.repeatCount += 1;
+                profile.repeatDelay = Mathf.Max(profile.repeatDelay, modifier.EvaluateFloat("delay", owner, 0.5f));
+            }
+
+            if (modifier.attributes["angle"] != null)
+            {
+                profile.volleyCount += 1;
+                profile.volleySpreadDegrees += modifier.EvaluateFloat("angle", owner, 10f);
+            }
+
+            if (modifier.attributes["on_hit_projectiles"] != null)
+            {
+                profile.onHitProjectiles += Mathf.Max(0, modifier.EvaluateInt("on_hit_projectiles", owner, 0));
+                profile.onHitDamage += Mathf.Max(0, modifier.EvaluateInt("on_hit_damage", owner, Mathf.Max(1, profile.damage / 5)));
+                profile.onHitProjectile = ProjectileSpellData.FromJson(modifier.GetObject("on_hit_projectile"), owner, profile.projectile);
+            }
+        }
+    }
+
+    protected int ApplyIntModifier(int current, SpellDefinition modifier, string multiplierKey, string adderKey, int minimum)
+    {
+        float value = current;
+        if (modifier.attributes[multiplierKey] != null)
+        {
+            value *= modifier.EvaluateFloat(multiplierKey, owner, 1f);
+        }
+        if (modifier.attributes[adderKey] != null)
+        {
+            value += modifier.EvaluateFloat(adderKey, owner, 0);
+        }
+        return Mathf.Max(minimum, Mathf.RoundToInt(value));
+    }
+
+    protected float ApplyFloatModifier(float current, SpellDefinition modifier, string multiplierKey, string adderKey, float minimum)
+    {
+        float value = current;
+        if (modifier.attributes[multiplierKey] != null)
+        {
+            value *= modifier.EvaluateFloat(multiplierKey, owner, 1f);
+        }
+        if (modifier.attributes[adderKey] != null)
+        {
+            value += modifier.EvaluateFloat(adderKey, owner, 0);
+        }
+        return Mathf.Max(minimum, value);
+    }
+
+    protected IEnumerator CastVolley(Vector3 where, Vector3 target, Hittable.Team hitTeam, SpellCastProfile profile)
+    {
+        for (int repeat = 0; repeat < profile.repeatCount; repeat++)
+        {
+            if (repeat > 0 && profile.repeatDelay > 0)
+            {
+                yield return new WaitForSeconds(profile.repeatDelay);
+            }
+
+            for (int volley = 0; volley < profile.volleyCount; volley++)
+            {
+                Vector3 direction = target - where;
+                float offset = GetSpreadOffset(volley, profile.volleyCount, profile.volleySpreadDegrees);
+                CastProjectiles(where, Rotate(direction, offset), hitTeam, profile);
+            }
+        }
+    }
+
+    protected void CastProjectiles(Vector3 where, Vector3 direction, Hittable.Team hitTeam, SpellCastProfile profile)
+    {
+        if (direction.sqrMagnitude < 0.0001f)
+        {
+            direction = Vector3.right;
+        }
+
+        int count = Mathf.Max(1, profile.projectileCount);
+        for (int i = 0; i < count; i++)
+        {
+            float offset = GetSpreadOffset(i, count, profile.projectileSpreadDegrees);
+            ProjectileSpellData projectile = profile.projectile ?? new ProjectileSpellData(0, "straight", 8f);
+            CreateProjectile(projectile, where, Rotate(direction, offset), (other, impact) => OnHit(other, impact, hitTeam, profile));
+        }
+    }
+
+    protected void CreateProjectile(ProjectileSpellData projectile, Vector3 where, Vector3 direction, Action<Hittable, Vector3> onHit)
+    {
+        if (GameManager.Instance.projectileManager == null)
+        {
+            Debug.LogWarning("Cannot cast spell because no ProjectileManager is registered.");
+            return;
+        }
+
+        if (projectile.lifetime > 0)
+        {
+            GameManager.Instance.projectileManager.CreateProjectile(projectile.sprite, projectile.trajectory, where, direction, projectile.speed, onHit, projectile.lifetime);
+        }
+        else
+        {
+            GameManager.Instance.projectileManager.CreateProjectile(projectile.sprite, projectile.trajectory, where, direction, projectile.speed, onHit);
+        }
+    }
+
+    protected void OnHit(Hittable other, Vector3 impact, Hittable.Team hitTeam, SpellCastProfile profile)
+    {
+        if (other.team == hitTeam) return;
+
+        other.Damage(new Damage(profile.damage, profile.damageType));
+        CastSecondaryProjectiles(impact, hitTeam, profile);
+        CastOnHitProjectiles(impact, hitTeam, profile);
+    }
+
+    protected void OnSecondaryHit(Hittable other, Vector3 impact, Hittable.Team hitTeam, int damage, Damage.Type damageType)
+    {
+        if (other.team == hitTeam) return;
+        other.Damage(new Damage(damage, damageType));
+    }
+
+    protected void CastSecondaryProjectiles(Vector3 impact, Hittable.Team hitTeam, SpellCastProfile profile)
+    {
+        if (profile.secondaryProjectile == null || profile.secondaryDamage <= 0 || profile.secondaryProjectileCount <= 0) return;
+
+        for (int i = 0; i < profile.secondaryProjectileCount; i++)
+        {
+            float angle = 360f * i / profile.secondaryProjectileCount;
+            Vector3 direction = Quaternion.Euler(0, 0, angle) * Vector3.right;
+            CreateProjectile(profile.secondaryProjectile, impact, direction,
+                (other, secondaryImpact) => OnSecondaryHit(other, secondaryImpact, hitTeam, profile.secondaryDamage, profile.damageType));
+        }
+    }
+
+    protected void CastOnHitProjectiles(Vector3 impact, Hittable.Team hitTeam, SpellCastProfile profile)
+    {
+        if (profile.onHitProjectile == null || profile.onHitDamage <= 0 || profile.onHitProjectiles <= 0) return;
+
+        for (int i = 0; i < profile.onHitProjectiles; i++)
+        {
+            float angle = 360f * i / profile.onHitProjectiles;
+            Vector3 direction = Quaternion.Euler(0, 0, angle) * Vector3.right;
+            CreateProjectile(profile.onHitProjectile, impact, direction,
+                (other, secondaryImpact) => OnSecondaryHit(other, secondaryImpact, hitTeam, profile.onHitDamage, profile.damageType));
+        }
+    }
+
+    protected float GetSpreadOffset(int index, int count, float spreadDegrees)
+    {
+        if (count <= 1 || Mathf.Abs(spreadDegrees) < Mathf.Epsilon) return 0;
+        return Mathf.Lerp(-spreadDegrees * 0.5f, spreadDegrees * 0.5f, index * 1.0f / (count - 1));
+    }
+
+    protected Vector3 Rotate(Vector3 direction, float degrees)
+    {
+        return Quaternion.Euler(0, 0, degrees) * direction;
+    }
 }

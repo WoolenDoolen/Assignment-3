@@ -46,7 +46,8 @@ public class ProjectileManager : MonoBehaviour
         {
             return new SpiralingProjectileMovement(speed);
         }
-        return null;
+        Debug.LogWarning("Unknown projectile trajectory '" + name + "'. Falling back to straight movement.");
+        return new StraightProjectileMovement(speed);
     }
 
 }
