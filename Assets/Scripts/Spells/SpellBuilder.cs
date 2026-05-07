@@ -19,14 +19,30 @@ public class SpellBuilder
 
     public Spell BuildRandom(SpellCaster owner, int maxModifiers = 3)
     {
+        return BuildRandom(owner, maxModifiers, false);
+    }
+
+    public Spell BuildReward(SpellCaster owner, int wave)
+    {
+        int maxModifiers = Mathf.Clamp(1 + wave / 2, 1, 3);
+        return BuildRandom(owner, maxModifiers, true);
+    }
+
+    private Spell BuildRandom(SpellCaster owner, int maxModifiers, bool requireModifier)
+    {
         SpellDefinition baseSpell = baseSpells.Count == 0 ? null : baseSpells[Random.Range(0, baseSpells.Count)];
         List<SpellDefinition> modifiers = new List<SpellDefinition>();
+        List<SpellDefinition> availableModifiers = new List<SpellDefinition>(modifierSpells);
 
-        while (modifiers.Count < maxModifiers && modifierSpells.Count > 0)
+        while (modifiers.Count < maxModifiers && availableModifiers.Count > 0)
         {
             float chance = modifiers.Count == 0 ? 0.7f : 0.45f;
-            if (Random.value > chance) break;
-            modifiers.Add(modifierSpells[Random.Range(0, modifierSpells.Count)]);
+            if (!requireModifier && Random.value > chance) break;
+
+            int modifierIndex = Random.Range(0, availableModifiers.Count);
+            modifiers.Add(availableModifiers[modifierIndex]);
+            availableModifiers.RemoveAt(modifierIndex);
+            requireModifier = false;
         }
 
         return new Spell(owner, baseSpell, modifiers);

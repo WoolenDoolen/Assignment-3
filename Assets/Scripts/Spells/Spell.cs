@@ -172,6 +172,11 @@ public class Spell
         return BuildProfile().damage;
     }
 
+    public string GetDescription()
+    {
+        return BuildProfile().description;
+    }
+
     public float GetCooldown()
     {
         return BuildProfile().cooldown;
@@ -180,6 +185,21 @@ public class Spell
     public virtual int GetIcon()
     {
         return BuildProfile().icon;
+    }
+
+    public string GetBaseId()
+    {
+        return baseDefinition == null ? "" : baseDefinition.id;
+    }
+
+    public List<string> GetModifierNames()
+    {
+        List<string> names = new List<string>();
+        foreach (SpellDefinition modifier in modifiers)
+        {
+            names.Add(modifier.GetString("name", modifier.id));
+        }
+        return names;
     }
 
     public bool IsReady()
@@ -246,6 +266,15 @@ public class Spell
         foreach (SpellDefinition modifier in modifiers)
         {
             profile.name = modifier.GetString("name", modifier.id) + " " + profile.name;
+            string modifierDescription = modifier.GetString("description", "");
+            if (!string.IsNullOrWhiteSpace(modifierDescription))
+            {
+                if (!string.IsNullOrWhiteSpace(profile.description))
+                {
+                    profile.description += "\n";
+                }
+                profile.description += modifier.GetString("name", modifier.id) + ": " + modifierDescription;
+            }
 
             profile.damage = ApplyIntModifier(profile.damage, modifier, "damage_multiplier", "damage_adder", 1);
             profile.manaCost = ApplyIntModifier(profile.manaCost, modifier, "mana_multiplier", "mana_adder", 0);
