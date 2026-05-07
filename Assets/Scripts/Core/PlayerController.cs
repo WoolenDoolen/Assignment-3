@@ -49,6 +49,17 @@ public class PlayerController : MonoBehaviour
         spellui.SetSpell(spellcaster.spell);
     }
 
+    public void EquipSpell(Spell spell)
+    {
+        if (spellcaster == null || spell == null) return;
+
+        spellcaster.EquipSpell(spell);
+        if (spellui != null)
+        {
+            spellui.SetSpell(spellcaster.spell);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {

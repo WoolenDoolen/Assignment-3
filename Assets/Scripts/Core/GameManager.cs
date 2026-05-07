@@ -22,6 +22,8 @@ public class GameManager
     public string resultMessage;
     public int enemiesSpawned;
     public int enemiesDefeated;
+    public Spell pendingSpellReward;
+    public int pendingSpellRewardWave;
 
     private static GameManager theInstance;
     public static GameManager Instance {  get
@@ -71,6 +73,7 @@ public class GameManager
         enemiesSpawned = 0;
         enemiesDefeated = 0;
         resultMessage = "";
+        ClearPendingSpellReward();
     }
 
     public void ClearEnemies()
@@ -83,6 +86,18 @@ public class GameManager
             }
         }
         enemies.Clear();
+    }
+
+    public void SetPendingSpellReward(Spell spell, int rewardWave)
+    {
+        pendingSpellReward = spell;
+        pendingSpellRewardWave = rewardWave;
+    }
+
+    public void ClearPendingSpellReward()
+    {
+        pendingSpellReward = null;
+        pendingSpellRewardWave = 0;
     }
 
     private GameManager()

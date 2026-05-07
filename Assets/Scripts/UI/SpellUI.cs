@@ -23,7 +23,11 @@ public class SpellUI : MonoBehaviour
     public void SetSpell(Spell spell)
     {
         this.spell = spell;
+        if (spell == null) return;
+
         GameManager.Instance.spellIconManager.PlaceSprite(spell.GetIcon(), icon.GetComponent<Image>());
+        RefreshText();
+        last_text_update = Time.time;
     }
 
     // Update is called once per frame
@@ -32,8 +36,7 @@ public class SpellUI : MonoBehaviour
         if (spell == null) return;
         if (Time.time > last_text_update + UPDATE_DELAY)
         {
-            manacost.text = spell.GetManaCost().ToString();
-            damage.text = spell.GetDamage().ToString();
+            RefreshText();
             last_text_update = Time.time;
         }
         
@@ -48,5 +51,11 @@ public class SpellUI : MonoBehaviour
             perc = 1-since_last / spell.GetCooldown();
         }
         cooldown.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 48 * perc);
+    }
+
+    void RefreshText()
+    {
+        manacost.text = spell.GetManaCost().ToString();
+        damage.text = spell.GetDamage().ToString();
     }
 }

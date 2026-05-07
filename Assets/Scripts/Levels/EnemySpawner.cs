@@ -75,6 +75,14 @@ public class EnemySpawner : MonoBehaviour
     {
         if (GameManager.Instance.state == GameManager.GameState.WAVEEND)
         {
+            GameObject playerObject = GameManager.Instance.player;
+            PlayerController player = playerObject == null ? null : playerObject.GetComponent<PlayerController>();
+            if (player != null && GameManager.Instance.pendingSpellReward != null)
+            {
+                player.EquipSpell(GameManager.Instance.pendingSpellReward);
+                GameManager.Instance.ClearPendingSpellReward();
+            }
+
             StartCoroutine(SpawnWave());
             return;
         }
@@ -93,6 +101,7 @@ public class EnemySpawner : MonoBehaviour
         GameManager.Instance.ClearEnemies();
         GameManager.Instance.state = GameManager.GameState.PREGAME;
         GameManager.Instance.resultMessage = "";
+        GameManager.Instance.ClearPendingSpellReward();
         level_selector.gameObject.SetActive(true);
     }
 

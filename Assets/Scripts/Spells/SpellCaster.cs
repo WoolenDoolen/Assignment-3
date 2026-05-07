@@ -41,4 +41,12 @@ public class SpellCaster
         yield break;
     }
 
+    public void EquipSpell(Spell nextSpell)
+    {
+        if (nextSpell == null) return;
+
+        spell = nextSpell;
+        spell.owner = this;
+    }
+
 }
