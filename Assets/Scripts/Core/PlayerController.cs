@@ -60,6 +60,62 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void SelectSpell(int slot)
+    {
+        if (spellcaster == null){return;}
+
+        spellcaster.SelectSpell(slot);
+
+        if (spellui != null)
+        {
+            spellui.SetSpell(spellcaster.spell);
+        }
+    }
+
+    public void EquipSpellAt(Spell spell, int slot)
+    {
+        if (spellcaster == null || spell == null){return;}
+
+        spellcaster.EquipSpellAt(spell, slot);
+
+        if (spellui != null)
+        {
+            spellui.SetSpell(spellcaster.spell);
+        }
+    }
+
+    void OnSpell1(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            SelectSpell(0);
+        }
+    }
+
+    void OnSpell2(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            SelectSpell(1);
+        }
+    }
+
+    void OnSpell3(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            SelectSpell(2);
+        }
+    }
+
+    void OnSpell4(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            SelectSpell(3);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {

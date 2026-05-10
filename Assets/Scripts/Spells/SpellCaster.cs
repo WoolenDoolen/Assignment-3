@@ -4,12 +4,18 @@ using System.Collections.Generic;
 
 public class SpellCaster 
 {
+    public int max_spells = 4;
     public int mana;
     public int max_mana;
     public int mana_reg;
     public int spell_power;
     public Hittable.Team team;
     public Spell spell;
+
+    private List<Spell> spells;
+    private int selectedIndex;
+
+    public int SelectedIndex {get{return selectedIndex;}}
 
     public IEnumerator ManaRegeneration()
     {
@@ -28,25 +34,117 @@ public class SpellCaster
         this.mana_reg = mana_reg;
         spell_power = 0;
         this.team = team;
-        spell = new SpellBuilder().Build(this);
+
+        spells = new List<Spell>();
+        selectedIndex = 0;
+
+        //basic spell in 0.
+        Spell startingSpell = new SpellBuilder().Build(this);
+        EquipSpellAt(startingSpell, 0);
     }
 
     public IEnumerator Cast(Vector3 where, Vector3 target)
-    {        
-        if (mana >= spell.GetManaCost() && spell.IsReady())
+    {
+        Spell activeSpell = GetCurrentSpell();
+
+        if (activeSpell != null && mana >= activeSpell.GetManaCost() && activeSpell.IsReady())
         {
-            mana -= spell.GetManaCost();
-            yield return spell.Cast(where, target, team);
+            mana -= activeSpell.GetManaCost();
+            yield return activeSpell.Cast(where, target, team);
         }
+
         yield break;
     }
 
-    public void EquipSpell(Spell nextSpell)
+    public Spell GetCurrentSpell()
     {
-        if (nextSpell == null) return;
-
-        spell = nextSpell;
-        spell.owner = this;
+        if (selectedIndex < 0 || selectedIndex >= spells.Count){return null;}
+        return spells[selectedIndex];
     }
 
+    public Spell GetSpell(int slot)
+    {
+        if (slot < 0 || slot >= spells.Count){return null;}
+        return spells[slot];
+    }
+
+    public bool SelectSpell(int slot)
+    {
+        if (slot < 0 || slot >= spells.Count)
+        {
+            return false;
+        }
+
+        if (spells[slot] == null)
+        {
+            return false;
+        }
+
+        selectedIndex = slot;
+        spell = spells[selectedIndex];
+        return true;
+    }
+
+    public bool EquipSpell(Spell nextSpell)
+    {
+        if (nextSpell == null)
+        {
+            return false;
+        }
+
+        // place empty slot.
+        for (int i = 0; i < max_spells; i++)
+        {
+            if (i >= spells.Count || spells[i] == null)
+            {
+                return EquipSpellAt(nextSpell, i);
+            }
+        }
+
+        //if full replace current -- to change????
+        return EquipSpellAt(nextSpell, selectedIndex);
+    }
+
+    public bool EquipSpellAt(Spell nextSpell, int slot)
+    {
+        if (nextSpell == null)
+        {
+            return false;
+        }
+
+        if (slot < 0 || slot >= max_spells)
+        {
+            return false;
+        }
+
+        while (spells.Count <= slot)
+        {
+            spells.Add(null);
+        }
+
+        nextSpell.owner = this;
+        spells[slot] = nextSpell;
+
+        SelectSpell(slot);
+        return true;
+    }
+
+    public void DropSpell(int slot)
+    {
+        if (slot < 0 || slot >= spells.Count){return;}
+
+        spells[slot] = null;
+        if (selectedIndex == slot)
+        {
+            for (int i = 0; i < spells.Count; i++)
+            {
+                if (spells[i] != null)
+                {
+                    SelectSpell(i);
+                    return;
+                }
+            }
+            spell = null;
+        }
+    }
 }
