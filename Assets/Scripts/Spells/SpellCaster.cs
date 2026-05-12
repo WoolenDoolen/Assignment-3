@@ -16,6 +16,7 @@ public class SpellCaster
     private int selectedIndex;
 
     public int SelectedIndex {get{return selectedIndex;}}
+    public int SlotCount {get{return max_spells;}}
 
     public IEnumerator ManaRegeneration()
     {
@@ -68,6 +69,42 @@ public class SpellCaster
         return spells[slot];
     }
 
+    public int GetEquippedSpellCount()
+    {
+        int count = 0;
+        for (int i = 0; i < spells.Count; i++)
+        {
+            if (spells[i] != null)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public bool CanDropSpell(int slot)
+    {
+        return GetSpell(slot) != null && GetEquippedSpellCount() > 1;
+    }
+
+    public int GetEquipSlotForNextSpell()
+    {
+        if (selectedIndex >= 0 && selectedIndex < max_spells && GetSpell(selectedIndex) == null)
+        {
+            return selectedIndex;
+        }
+
+        for (int i = 0; i < max_spells; i++)
+        {
+            if (GetSpell(i) == null)
+            {
+                return i;
+            }
+        }
+
+        return Mathf.Clamp(selectedIndex, 0, max_spells - 1);
+    }
+
     public bool SelectSpell(int slot)
     {
         if (slot < 0 || slot >= spells.Count)
@@ -92,17 +129,7 @@ public class SpellCaster
             return false;
         }
 
-        // place empty slot.
-        for (int i = 0; i < max_spells; i++)
-        {
-            if (i >= spells.Count || spells[i] == null)
-            {
-                return EquipSpellAt(nextSpell, i);
-            }
-        }
-
-        //if full replace current -- to change????
-        return EquipSpellAt(nextSpell, selectedIndex);
+        return EquipSpellAt(nextSpell, GetEquipSlotForNextSpell());
     }
 
     public bool EquipSpellAt(Spell nextSpell, int slot)
@@ -129,9 +156,9 @@ public class SpellCaster
         return true;
     }
 
-    public void DropSpell(int slot)
+    public bool DropSpell(int slot)
     {
-        if (slot < 0 || slot >= spells.Count){return;}
+        if (!CanDropSpell(slot)){return false;}
 
         spells[slot] = null;
         if (selectedIndex == slot)
@@ -141,10 +168,11 @@ public class SpellCaster
                 if (spells[i] != null)
                 {
                     SelectSpell(i);
-                    return;
+                    return true;
                 }
             }
             spell = null;
         }
+        return true;
     }
 }

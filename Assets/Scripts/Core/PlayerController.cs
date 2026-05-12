@@ -49,15 +49,22 @@ public class PlayerController : MonoBehaviour
         spellui.SetSpell(spellcaster.spell);
     }
 
-    public void EquipSpell(Spell spell)
+    public bool EquipSpell(Spell spell)
     {
-        if (spellcaster == null || spell == null) return;
+        if (spellcaster == null || spell == null) return false;
 
-        spellcaster.EquipSpell(spell);
-        if (spellui != null)
-        {
-            spellui.SetSpell(spellcaster.spell);
-        }
+        bool equipped = spellcaster.EquipSpell(spell);
+        RefreshCurrentSpellUI();
+        return equipped;
+    }
+
+    public bool DropSpell(int slot)
+    {
+        if (spellcaster == null) return false;
+
+        bool dropped = spellcaster.DropSpell(slot);
+        RefreshCurrentSpellUI();
+        return dropped;
     }
 
     public void SelectSpell(int slot)
@@ -66,10 +73,7 @@ public class PlayerController : MonoBehaviour
 
         spellcaster.SelectSpell(slot);
 
-        if (spellui != null)
-        {
-            spellui.SetSpell(spellcaster.spell);
-        }
+        RefreshCurrentSpellUI();
     }
 
     public void EquipSpellAt(Spell spell, int slot)
@@ -78,6 +82,11 @@ public class PlayerController : MonoBehaviour
 
         spellcaster.EquipSpellAt(spell, slot);
 
+        RefreshCurrentSpellUI();
+    }
+
+    void RefreshCurrentSpellUI()
+    {
         if (spellui != null)
         {
             spellui.SetSpell(spellcaster.spell);

@@ -7,6 +7,7 @@ public class SpellUIContainer : MonoBehaviour
 
     void Start()
     {
+        ConfigureSlots();
         ShowAllSlots();
         Refresh();
     }
@@ -15,6 +16,21 @@ public class SpellUIContainer : MonoBehaviour
     {
         ShowAllSlots();
         Refresh();
+    }
+
+    void ConfigureSlots()
+    {
+        if (spellUIs == null) return;
+
+        for (int i = 0; i < spellUIs.Length; i++)
+        {
+            if (spellUIs[i] == null) continue;
+
+            SpellUI ui = spellUIs[i].GetComponent<SpellUI>();
+            if (ui == null) continue;
+
+            ui.Setup(this, player, i);
+        }
     }
 
     void ShowAllSlots()
@@ -76,6 +92,14 @@ public class SpellUIContainer : MonoBehaviour
         if (player == null) return;
 
         player.SelectSpell(slot);
+        Refresh();
+    }
+
+    public void DropSlot(int slot)
+    {
+        if (player == null) return;
+
+        player.DropSpell(slot);
         Refresh();
     }
 }

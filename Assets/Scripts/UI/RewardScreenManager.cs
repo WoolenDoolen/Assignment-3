@@ -44,13 +44,20 @@ public class RewardScreenManager : MonoBehaviour
 
         if (shouldShow && buttonText != null)
         {
-            EnsurePendingRewardSpell();
-            buttonText.text = GameManager.Instance.state == GameManager.GameState.WAVEEND ? "Take Spell" : "Return to Start";
-            messageText.text = GetMessage();
+            PlayerController player = GetPlayer();
+            EnsurePendingRewardSpell(player);
+            buttonText.text = GameManager.Instance.state == GameManager.GameState.WAVEEND ? GetRewardButtonText(player) : "Return to Start";
+            messageText.text = GetMessage(player);
         }
     }
 
-    void EnsurePendingRewardSpell()
+    PlayerController GetPlayer()
+    {
+        GameObject playerObject = GameManager.Instance.player;
+        return playerObject == null ? null : playerObject.GetComponent<PlayerController>();
+    }
+
+    void EnsurePendingRewardSpell(PlayerController player)
     {
         if (GameManager.Instance.state != GameManager.GameState.WAVEEND) return;
         if (GameManager.Instance.pendingSpellReward != null &&
@@ -59,8 +66,6 @@ public class RewardScreenManager : MonoBehaviour
             return;
         }
 
-        GameObject playerObject = GameManager.Instance.player;
-        PlayerController player = playerObject == null ? null : playerObject.GetComponent<PlayerController>();
         if (player == null || player.spellcaster == null) return;
 
         GameManager.Instance.SetPendingSpellReward(
@@ -68,19 +73,26 @@ public class RewardScreenManager : MonoBehaviour
             GameManager.Instance.wave);
     }
 
-    string GetMessage()
+    string GetMessage(PlayerController player)
     {
         if (GameManager.Instance.state == GameManager.GameState.WAVEEND)
         {
             return "Wave " + GameManager.Instance.wave + " complete\nEnemies defeated: " +
                    GameManager.Instance.enemiesDefeated + "/" + GameManager.Instance.enemiesSpawned +
-                   "\n\nReward Spell\n" + GetRewardDescription();
+                   "\n\nReward Spell\n" + GetRewardDescription(player);
         }
         return GameManager.Instance.resultMessage + "\nEnemies defeated: " +
                GameManager.Instance.enemiesDefeated + "/" + GameManager.Instance.enemiesSpawned;
     }
 
-    string GetRewardDescription()
+    string GetRewardButtonText(PlayerController player)
+    {
+        if (player == null || player.spellcaster == null) return "Take Spell";
+
+        return "Take Spell (Slot " + (player.spellcaster.GetEquipSlotForNextSpell() + 1) + ")";
+    }
+
+    string GetRewardDescription(PlayerController player)
     {
         Spell reward = GameManager.Instance.pendingSpellReward;
         if (reward == null) return "No spell reward generated.";
@@ -89,6 +101,21 @@ public class RewardScreenManager : MonoBehaviour
                "\nDamage: " + reward.GetDamage() +
                "   Mana: " + reward.GetManaCost() +
                "   Cooldown: " + reward.GetCooldown().ToString("0.0") + "s" +
+               "\n" + GetRewardSlotDescription(player) +
                "\n" + reward.GetDescription();
+    }
+
+    string GetRewardSlotDescription(PlayerController player)
+    {
+        if (player == null || player.spellcaster == null) return "Slot: unavailable";
+
+        int slot = player.spellcaster.GetEquipSlotForNextSpell();
+        Spell current = player.spellcaster.GetSpell(slot);
+        if (current == null)
+        {
+            return "Slot " + (slot + 1) + ": empty";
+        }
+
+        return "Slot " + (slot + 1) + ": replacing " + current.GetName();
     }
 }
