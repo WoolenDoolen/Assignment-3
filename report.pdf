@@ -1,9 +1,10 @@
 %PDF-1.4
+%‚„œ”
 1 0 obj
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [7 0 R 9 0 R 11 0 R 13 0 R] /Count 4 >>
+<< /Type /Pages /Kids [7 0 R 9 0 R 11 0 R] /Count 3 >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
@@ -15,234 +16,153 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Courier >>
 endobj
 6 0 obj
-<< /Length 4527 >>
+<< /Length 3853 >>
 stream
-BT /F2 18 Tf 50 760 Td (CMPM 121 Assignment 3 Report) Tj ET
-BT /F2 14 Tf 50 718 Td (Architecture Diagram) Tj ET
-BT /F3 8 Tf 50 680 Td (classDiagram) Tj ET
-BT /F3 8 Tf 50 670 Td (    GameManager --> RewardScreenManager : stores pending reward spell) Tj ET
-BT /F3 8 Tf 50 660 Td (    RewardScreenManager --> SpellBuilder : generates wave reward) Tj ET
-BT /F3 8 Tf 50 650 Td (    RewardScreenManager --> PlayerController : reads spell inventory) Tj ET
-BT /F3 8 Tf 50 640 Td (    EnemySpawner --> PlayerController : starts waves and accepts rewards) Tj ET
-BT /F3 8 Tf 50 630 Td (    PlayerController --> SpellCaster : owns mana and spell slots) Tj ET
-BT /F3 8 Tf 50 620 Td (    PlayerController --> Hittable : scales max HP by wave) Tj ET
-BT /F3 8 Tf 50 610 Td (    PlayerController --> ClassesJson : evaluates class stats) Tj ET
-BT /F3 8 Tf 50 600 Td (    SpellCaster --> Spell : casts selected spell) Tj ET
-BT /F3 8 Tf 50 590 Td (    SpellCaster --> SpellBuilder : creates starting spell) Tj ET
-BT /F3 8 Tf 50 580 Td (    SpellUIContainer --> SpellCaster : shows four slots) Tj ET
-BT /F3 8 Tf 50 570 Td (    SpellUIContainer --> SpellUI : refreshes slot views) Tj ET
-BT /F3 8 Tf 50 560 Td (    SpellUI --> SpellCaster : checks drop state) Tj ET
-BT /F3 8 Tf 50 550 Td (    SpellBuilder --> SpellsJson : loads base and modifier definitions) Tj ET
-BT /F3 8 Tf 50 540 Td (    SpellBuilder --> SpellDefinition : stores JSON attributes) Tj ET
-BT /F3 8 Tf 50 530 Td (    Spell --> SpellCastProfile : builds cast-time values) Tj ET
-BT /F3 8 Tf 50 520 Td (    Spell --> ProjectileSpellData : configures projectile movement) Tj ET
-BT /F3 8 Tf 50 510 Td (    Spell --> ProjectileManager : creates projectiles) Tj ET
-BT /F3 8 Tf 50 500 Td (    Spell --> Damage : applies on-hit damage) Tj ET
-BT /F3 8 Tf 50 490 Td () Tj ET
-BT /F3 8 Tf 50 480 Td (    class GameManager {) Tj ET
-BT /F3 8 Tf 50 470 Td (        +Spell pendingSpellReward) Tj ET
-BT /F3 8 Tf 50 460 Td (        +int pendingSpellRewardWave) Tj ET
-BT /F3 8 Tf 50 450 Td (        +void SetPendingSpellReward\(Spell spell, int rewardWave\)) Tj ET
-BT /F3 8 Tf 50 440 Td (        +void ClearPendingSpellReward\(\)) Tj ET
-BT /F3 8 Tf 50 430 Td (    }) Tj ET
-BT /F3 8 Tf 50 420 Td () Tj ET
-BT /F3 8 Tf 50 410 Td (    class RewardScreenManager {) Tj ET
-BT /F3 8 Tf 50 400 Td (        +GameObject rewardUI) Tj ET
-BT /F3 8 Tf 50 390 Td (        -TextMeshProUGUI buttonText) Tj ET
-BT /F3 8 Tf 50 380 Td (        -TextMeshProUGUI messageText) Tj ET
-BT /F3 8 Tf 50 370 Td (        -SpellBuilder spellBuilder) Tj ET
-BT /F3 8 Tf 50 360 Td (        +void Start\(\)) Tj ET
-BT /F3 8 Tf 50 350 Td (        +void Update\(\)) Tj ET
-BT /F3 8 Tf 50 340 Td (        -PlayerController GetPlayer\(\)) Tj ET
-BT /F3 8 Tf 50 330 Td (        -void EnsurePendingRewardSpell\(PlayerController player\)) Tj ET
-BT /F3 8 Tf 50 320 Td (        -string GetMessage\(PlayerController player\)) Tj ET
-BT /F3 8 Tf 50 310 Td (        -string GetRewardButtonText\(PlayerController player\)) Tj ET
-BT /F3 8 Tf 50 300 Td (        -string GetRewardDescription\(PlayerController player\)) Tj ET
-BT /F3 8 Tf 50 290 Td (        -string GetRewardSlotDescription\(PlayerController player\)) Tj ET
-BT /F3 8 Tf 50 280 Td (    }) Tj ET
-BT /F3 8 Tf 50 270 Td () Tj ET
-BT /F3 8 Tf 50 260 Td (    class SpellCaster {) Tj ET
-BT /F3 8 Tf 50 250 Td (        +int max_spells) Tj ET
-BT /F3 8 Tf 50 240 Td (        +int mana) Tj ET
-BT /F3 8 Tf 50 230 Td (        +int max_mana) Tj ET
-BT /F3 8 Tf 50 220 Td (        +int mana_reg) Tj ET
-BT /F3 8 Tf 50 210 Td (        +int spell_power) Tj ET
-BT /F3 8 Tf 50 200 Td (        +Spell spell) Tj ET
-BT /F3 8 Tf 50 190 Td (        +int SelectedIndex) Tj ET
-BT /F3 8 Tf 50 180 Td (        +int SlotCount) Tj ET
-BT /F3 8 Tf 50 170 Td (        +IEnumerator ManaRegeneration\(\)) Tj ET
-BT /F3 8 Tf 50 160 Td (        +IEnumerator Cast\(Vector3 where, Vector3 target\)) Tj ET
-BT /F3 8 Tf 50 150 Td (        +Spell GetCurrentSpell\(\)) Tj ET
-BT /F3 8 Tf 50 140 Td (        +Spell GetSpell\(int slot\)) Tj ET
-BT /F3 8 Tf 50 130 Td (        +int GetEquippedSpellCount\(\)) Tj ET
-BT /F3 8 Tf 50 120 Td (        +bool CanDropSpell\(int slot\)) Tj ET
-BT /F3 8 Tf 50 110 Td (        +int GetEquipSlotForNextSpell\(\)) Tj ET
-BT /F3 8 Tf 50 100 Td (        +bool SelectSpell\(int slot\)) Tj ET
-BT /F3 8 Tf 50 90 Td (        +bool EquipSpell\(Spell nextSpell\)) Tj ET
-BT /F3 8 Tf 50 80 Td (        +bool EquipSpellAt\(Spell nextSpell, int slot\)) Tj ET
-BT /F3 8 Tf 50 70 Td (        +bool DropSpell\(int slot\)) Tj ET
+BT /F2 20 Tf 50 748 Td (CMPM 121 Assignment 3 Report) Tj ET
+BT /F2 14 Tf 50 704 Td (Architecture Diagram) Tj ET
+BT /F3 9 Tf 50 666 Td (spells.json) Tj ET
+BT /F3 9 Tf 50 655 Td (    |) Tj ET
+BT /F3 9 Tf 50 644 Td (    v) Tj ET
+BT /F3 9 Tf 50 633 Td (SpellBuilder -----> SpellDefinition) Tj ET
+BT /F3 9 Tf 50 622 Td (    |                    |) Tj ET
+BT /F3 9 Tf 50 611 Td (    v                    v) Tj ET
+BT /F3 9 Tf 50 600 Td (SpellCaster ------> Spell --------> SpellCastProfile) Tj ET
+BT /F3 9 Tf 50 589 Td (    |                 |                 |) Tj ET
+BT /F3 9 Tf 50 578 Td (    |                 v                 v) Tj ET
+BT /F3 9 Tf 50 567 Td (    |            ProjectileManager   ProjectileSpellData) Tj ET
+BT /F3 9 Tf 50 556 Td (    |) Tj ET
+BT /F3 9 Tf 50 545 Td (    v) Tj ET
+BT /F3 9 Tf 50 534 Td (PlayerController ----> classes.json) Tj ET
+BT /F3 9 Tf 50 523 Td (    |) Tj ET
+BT /F3 9 Tf 50 512 Td (    v) Tj ET
+BT /F3 9 Tf 50 501 Td (SpellUIContainer ----> SpellUI) Tj ET
+BT /F3 9 Tf 50 490 Td () Tj ET
+BT /F3 9 Tf 50 479 Td (GameManager ----> RewardScreenManager ----> SpellBuilder) Tj ET
+BT /F3 9 Tf 50 468 Td (     ^                    |) Tj ET
+BT /F3 9 Tf 50 457 Td (     |                    v) Tj ET
+BT /F3 9 Tf 50 446 Td (EnemySpawner ------> PlayerController) Tj ET
+BT /F1 10 Tf 50 427 Td (The main flow is data-driven. `SpellBuilder` reads `spells.json`, stores every entry as) Tj ET
+BT /F1 10 Tf 50 414 Td (a `SpellDefinition`, and separates base spells from modifier spells. `SpellCaster` owns) Tj ET
+BT /F1 10 Tf 50 401 Td (the player's mana, spell power, selected slot, and four spell slots. When the player) Tj ET
+BT /F1 10 Tf 50 388 Td (casts, the selected `Spell` builds a temporary `SpellCastProfile`, evaluates RPN) Tj ET
+BT /F1 10 Tf 50 375 Td (expressions with `wave` and `power`, applies modifiers, and asks `ProjectileManager` to) Tj ET
+BT /F1 10 Tf 50 362 Td (spawn the correct projectile behavior.) Tj ET
+BT /F1 10 Tf 50 341 Td (Wave rewards are coordinated by `GameManager`, `RewardScreenManager`, and) Tj ET
+BT /F1 10 Tf 50 328 Td (`EnemySpawner`. `RewardScreenManager` creates and previews a pending random spell after) Tj ET
+BT /F1 10 Tf 50 315 Td (a wave. The player can select an existing slot or drop a spell, and) Tj ET
+BT /F1 10 Tf 50 302 Td (`EnemySpawner.NextWave` equips the pending reward before the next wave starts.) Tj ET
+BT /F2 14 Tf 50 281 Td (Added And Changed Classes) Tj ET
+BT /F1 10 Tf 50 243 Td (`SpellDefinition`: stores each JSON spell entry and exposes helpers for string fields,) Tj ET
+BT /F1 10 Tf 50 230 Td (nested objects, and RPN integer/float evaluation. Methods: `IsBaseSpell`, `GetString`,) Tj ET
+BT /F1 10 Tf 50 217 Td (`GetObject`, `EvaluateInt`, and `EvaluateFloat`.) Tj ET
+BT /F1 10 Tf 50 196 Td (`ProjectileSpellData`: stores projectile sprite, trajectory, speed, and lifetime,) Tj ET
+BT /F1 10 Tf 50 183 Td (including JSON loading with fallback values. Methods: `Copy` and `FromJson`.) Tj ET
+BT /F1 10 Tf 50 162 Td (`SpellCastProfile`: stores the final cast-time values after a base spell and its) Tj ET
+BT /F1 10 Tf 50 149 Td (modifiers have been combined.) Tj ET
+BT /F1 10 Tf 50 128 Td (`Spell`: now supports JSON-driven base spells and modifiers. It applies damage, mana,) Tj ET
+BT /F1 10 Tf 50 115 Td (cooldown, speed, trajectory, delayed recasts, split volleys, spray projectiles,) Tj ET
+BT /F1 10 Tf 50 102 Td (secondary projectiles, and on-hit projectile bursts. Methods: `GetName`, `GetManaCost`,) Tj ET
+BT /F1 10 Tf 50 89 Td (`GetDamage`, `GetDescription`, `GetCooldown`, `GetIcon`, `GetBaseId`,) Tj ET
+BT /F1 10 Tf 50 76 Td (`GetModifierNames`, `IsReady`, `Cast`, `BuildProfile`, `ApplyModifiers`, `CastVolley`,) Tj ET
+BT /F1 10 Tf 50 63 Td (`CastProjectiles`, `CreateProjectile`, `OnHit`, `CastSecondaryProjectiles`, and) Tj ET
+BT /F1 8 Tf 540 28 Td (1) Tj ET
 endstream
 endobj
 7 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 6 0 R >>
 endobj
 8 0 obj
-<< /Length 4863 >>
+<< /Length 4173 >>
 stream
-BT /F3 8 Tf 50 760 Td (    }) Tj ET
-BT /F3 8 Tf 50 750 Td () Tj ET
-BT /F3 8 Tf 50 740 Td (    class SpellBuilder {) Tj ET
-BT /F3 8 Tf 50 730 Td (        -Dictionary~string, SpellDefinition~ definitions) Tj ET
-BT /F3 8 Tf 50 720 Td (        -List~SpellDefinition~ baseSpells) Tj ET
-BT /F3 8 Tf 50 710 Td (        -List~SpellDefinition~ modifierSpells) Tj ET
-BT /F3 8 Tf 50 700 Td (        +Spell Build\(SpellCaster owner\)) Tj ET
-BT /F3 8 Tf 50 690 Td (        +Spell BuildRandom\(SpellCaster owner, int maxModifiers\)) Tj ET
-BT /F3 8 Tf 50 680 Td (        +Spell BuildReward\(SpellCaster owner, int wave\)) Tj ET
-BT /F3 8 Tf 50 670 Td (        +Spell BuildWithModifiers\(SpellCaster owner, string baseId, string[] modifierIds\)) Tj ET
-BT /F3 8 Tf 50 660 Td (        -void LoadDefinitions\(\)) Tj ET
-BT /F3 8 Tf 50 650 Td (        -string LoadSpellData\(\)) Tj ET
-BT /F3 8 Tf 50 640 Td (        -SpellDefinition GetDefinition\(string id\)) Tj ET
-BT /F3 8 Tf 50 630 Td (    }) Tj ET
-BT /F3 8 Tf 50 620 Td () Tj ET
-BT /F3 8 Tf 50 610 Td (    class SpellDefinition {) Tj ET
-BT /F3 8 Tf 50 600 Td (        +string id) Tj ET
-BT /F3 8 Tf 50 590 Td (        +JObject attributes) Tj ET
-BT /F3 8 Tf 50 580 Td (        +bool IsBaseSpell\(\)) Tj ET
-BT /F3 8 Tf 50 570 Td (        +string GetString\(string key, string fallback\)) Tj ET
-BT /F3 8 Tf 50 560 Td (        +JObject GetObject\(string key\)) Tj ET
-BT /F3 8 Tf 50 550 Td (        +int EvaluateInt\(string key, SpellCaster owner, int fallback\)) Tj ET
-BT /F3 8 Tf 50 540 Td (        +float EvaluateFloat\(string key, SpellCaster owner, float fallback\)) Tj ET
-BT /F3 8 Tf 50 530 Td (        +static int EvaluateInt\(JToken token, SpellCaster owner, int fallback\)) Tj ET
-BT /F3 8 Tf 50 520 Td (        +static float EvaluateFloat\(JToken token, SpellCaster owner, float fallback\)) Tj ET
-BT /F3 8 Tf 50 510 Td (    }) Tj ET
-BT /F3 8 Tf 50 500 Td () Tj ET
-BT /F3 8 Tf 50 490 Td (    class Spell {) Tj ET
-BT /F3 8 Tf 50 480 Td (        +float last_cast) Tj ET
-BT /F3 8 Tf 50 470 Td (        +SpellCaster owner) Tj ET
-BT /F3 8 Tf 50 460 Td (        +Hittable.Team team) Tj ET
-BT /F3 8 Tf 50 450 Td (        +string GetName\(\)) Tj ET
-BT /F3 8 Tf 50 440 Td (        +int GetManaCost\(\)) Tj ET
-BT /F3 8 Tf 50 430 Td (        +int GetDamage\(\)) Tj ET
-BT /F3 8 Tf 50 420 Td (        +string GetDescription\(\)) Tj ET
-BT /F3 8 Tf 50 410 Td (        +float GetCooldown\(\)) Tj ET
-BT /F3 8 Tf 50 400 Td (        +int GetIcon\(\)) Tj ET
-BT /F3 8 Tf 50 390 Td (        +string GetBaseId\(\)) Tj ET
-BT /F3 8 Tf 50 380 Td (        +List~string~ GetModifierNames\(\)) Tj ET
-BT /F3 8 Tf 50 370 Td (        +bool IsReady\(\)) Tj ET
-BT /F3 8 Tf 50 360 Td (        +IEnumerator Cast\(Vector3 where, Vector3 target, Hittable.Team team\)) Tj ET
-BT /F3 8 Tf 50 350 Td (        -SpellCastProfile BuildProfile\(\)) Tj ET
-BT /F3 8 Tf 50 340 Td (        -void ApplyModifiers\(SpellCastProfile profile\)) Tj ET
-BT /F3 8 Tf 50 330 Td (        -IEnumerator CastVolley\(Vector3 where, Vector3 target, Hittable.Team hitTeam, SpellCastProfile pr) Tj ET
-BT /F3 8 Tf 50 320 Td (        -void CastProjectiles\(Vector3 where, Vector3 direction, Hittable.Team hitTeam, SpellCastProfile p) Tj ET
-BT /F3 8 Tf 50 310 Td (        -void OnHit\(Hittable other, Vector3 impact, Hittable.Team hitTeam, SpellCastProfile profile\)) Tj ET
-BT /F3 8 Tf 50 300 Td (        -void CastSecondaryProjectiles\(Vector3 impact, Hittable.Team hitTeam, SpellCastProfile profile\)) Tj ET
-BT /F3 8 Tf 50 290 Td (        -void CastOnHitProjectiles\(Vector3 impact, Hittable.Team hitTeam, SpellCastProfile profile\)) Tj ET
-BT /F3 8 Tf 50 280 Td (    }) Tj ET
-BT /F3 8 Tf 50 270 Td () Tj ET
-BT /F3 8 Tf 50 260 Td (    class SpellUIContainer {) Tj ET
-BT /F3 8 Tf 50 250 Td (        +GameObject[] spellUIs) Tj ET
-BT /F3 8 Tf 50 240 Td (        +PlayerController player) Tj ET
-BT /F3 8 Tf 50 230 Td (        +void SelectSlot\(int slot\)) Tj ET
-BT /F3 8 Tf 50 220 Td (        +void DropSlot\(int slot\)) Tj ET
-BT /F3 8 Tf 50 210 Td (    }) Tj ET
-BT /F3 8 Tf 50 200 Td () Tj ET
-BT /F3 8 Tf 50 190 Td (    class SpellUI {) Tj ET
-BT /F3 8 Tf 50 180 Td (        +GameObject icon) Tj ET
-BT /F3 8 Tf 50 170 Td (        +RectTransform cooldown) Tj ET
-BT /F3 8 Tf 50 160 Td (        +TextMeshProUGUI manacost) Tj ET
-BT /F3 8 Tf 50 150 Td (        +TextMeshProUGUI damage) Tj ET
-BT /F3 8 Tf 50 140 Td (        +GameObject highlight) Tj ET
-BT /F3 8 Tf 50 130 Td (        +GameObject dropbutton) Tj ET
-BT /F3 8 Tf 50 120 Td (        +int slotIndex) Tj ET
-BT /F3 8 Tf 50 110 Td (        +PlayerController player) Tj ET
-BT /F3 8 Tf 50 100 Td (        +void Setup\(SpellUIContainer container, PlayerController player, int slotIndex\)) Tj ET
-BT /F3 8 Tf 50 90 Td (        +void SetSpell\(Spell spell\)) Tj ET
-BT /F3 8 Tf 50 80 Td (        +void DropSpell\(\)) Tj ET
-BT /F3 8 Tf 50 70 Td (    }) Tj ET
+BT /F1 10 Tf 50 748 Td (`CastOnHitProjectiles`.) Tj ET
+BT /F1 10 Tf 50 727 Td (`SpellBuilder`: loads `spells.json`, builds the starting Arcane Bolt, builds random) Tj ET
+BT /F1 10 Tf 50 714 Td (reward spells, and can build specific base/modifier combinations for testing. Methods:) Tj ET
+BT /F1 10 Tf 50 701 Td (`Build`, `BuildRandom`, `BuildReward`, `BuildWithModifiers`, `LoadDefinitions`,) Tj ET
+BT /F1 10 Tf 50 688 Td (`LoadSpellData`, and `GetDefinition`.) Tj ET
+BT /F1 10 Tf 50 667 Td (`SpellCaster`: now supports four spell slots, selected-slot casting, slot replacement,) Tj ET
+BT /F1 10 Tf 50 654 Td (slot dropping, equipped-spell counts, and reward slot selection. Methods:) Tj ET
+BT /F1 10 Tf 50 641 Td (`ManaRegeneration`, `Cast`, `GetCurrentSpell`, `GetSpell`, `GetEquippedSpellCount`,) Tj ET
+BT /F1 10 Tf 50 628 Td (`CanDropSpell`, `GetEquipSlotForNextSpell`, `SelectSpell`, `EquipSpell`, `EquipSpellAt`,) Tj ET
+BT /F1 10 Tf 50 615 Td (and `DropSpell`.) Tj ET
+BT /F1 10 Tf 50 594 Td (`PlayerController`: evaluates wave-scaled class stats from `classes.json`, preserves) Tj ET
+BT /F1 10 Tf 50 581 Td (health and mana percentages while scaling, exposes spell selection, equipping, and) Tj ET
+BT /F1 10 Tf 50 568 Td (dropping to the UI. Methods: `StartLevel`, `EquipSpell`, `DropSpell`, `SelectSpell`,) Tj ET
+BT /F1 10 Tf 50 555 Td (`EquipSpellAt`, `ApplyWaveStats`, `GetClassAttributes`, `LoadClassConfig`, and) Tj ET
+BT /F1 10 Tf 50 542 Td (`EvaluateClassValue`.) Tj ET
+BT /F1 10 Tf 50 521 Td (`RewardScreenManager`: previews the generated reward spell, shows damage/mana/cooldown,) Tj ET
+BT /F1 10 Tf 50 508 Td (and tells the player which spell slot will receive or replace the reward. Methods:) Tj ET
+BT /F1 10 Tf 50 495 Td (`Start`, `Update`, `GetPlayer`, `EnsurePendingRewardSpell`, `GetMessage`,) Tj ET
+BT /F1 10 Tf 50 482 Td (`GetRewardButtonText`, `GetRewardDescription`, and `GetRewardSlotDescription`.) Tj ET
+BT /F1 10 Tf 50 461 Td (`SpellUIContainer`: keeps all four spell slots visible, refreshes each slot, highlights) Tj ET
+BT /F1 10 Tf 50 448 Td (the selected slot, and forwards slot/drop commands. Methods: `ConfigureSlots`,) Tj ET
+BT /F1 10 Tf 50 435 Td (`ShowAllSlots`, `Refresh`, `SelectSlot0`, `SelectSlot1`, `SelectSlot2`, `SelectSlot3`,) Tj ET
+BT /F1 10 Tf 50 422 Td (`SelectSlot`, and `DropSlot`.) Tj ET
+BT /F1 10 Tf 50 401 Td (`SpellUI`: displays spell icon, mana cost, damage, cooldown fill, selection highlight,) Tj ET
+BT /F1 10 Tf 50 388 Td (and enables the drop button only when dropping is valid. Methods: `Start`, `Setup`,) Tj ET
+BT /F1 10 Tf 50 375 Td (`SetSpell`, `Update`, `RefreshText`, `BindDropButton`, `UpdateDropButton`, and) Tj ET
+BT /F1 10 Tf 50 362 Td (`DropSpell`.) Tj ET
+BT /F1 10 Tf 50 341 Td (`GameManager`: stores the pending reward spell and reward wave so one reward is) Tj ET
+BT /F1 10 Tf 50 328 Td (generated per completed wave. Methods: `SetPendingSpellReward` and) Tj ET
+BT /F1 10 Tf 50 315 Td (`ClearPendingSpellReward`.) Tj ET
+BT /F2 14 Tf 50 294 Td (Spell Descriptions) Tj ET
+BT /F1 10 Tf 50 256 Td (Base spells:) Tj ET
+BT /F1 10 Tf 50 235 Td (- `arcane_bolt`: a straight projectile with medium damage.) Tj ET
+BT /F1 10 Tf 50 222 Td (- `magic_missile`: a low-damage homing projectile.) Tj ET
+BT /F1 10 Tf 50 209 Td (- `arcane_blast`: a medium projectile that creates secondary bolts on impact.) Tj ET
+BT /F1 10 Tf 50 196 Td (- `arcane_spray`: a cone of fast, short-lived low-damage projectiles.) Tj ET
+BT /F1 10 Tf 50 175 Td (Required modifiers:) Tj ET
+BT /F1 10 Tf 50 154 Td (- `damage_amp`: multiplies damage and mana cost.) Tj ET
+BT /F1 10 Tf 50 141 Td (- `speed_amp`: multiplies projectile speed.) Tj ET
+BT /F1 10 Tf 50 128 Td (- `doubler`: casts the modified spell again after a short delay.) Tj ET
+BT /F1 10 Tf 50 115 Td (- `splitter`: casts the modified spell in two slightly different directions.) Tj ET
+BT /F1 10 Tf 50 102 Td (- `chaos`: greatly increases damage and changes the projectile trajectory to) Tj ET
+BT /F1 10 Tf 50 89 Td (  spiraling.) Tj ET
+BT /F1 10 Tf 50 76 Td (- `homing`: changes the trajectory to homing, reduces damage, and adds mana cost.) Tj ET
+BT /F1 8 Tf 540 28 Td (2) Tj ET
 endstream
 endobj
 9 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 8 0 R >>
 endobj
 10 0 obj
-<< /Length 4379 >>
+<< /Length 1425 >>
 stream
-BT /F2 14 Tf 50 751 Td (Architecture Description) Tj ET
-BT /F1 10 Tf 50 713 Td (Spell data is loaded from `Assets/Resources/spells.json` into `SpellDefinition` objects.) Tj ET
-BT /F1 10 Tf 50 700 Td (`SpellBuilder` separates base spells from modifier spells, builds the player's starting) Tj ET
-BT /F1 10 Tf 50 687 Td (Arcane Bolt, and generates random reward spells by combining one base spell with a random) Tj ET
-BT /F1 10 Tf 50 674 Td (list of modifier definitions.) Tj ET
-BT /F1 10 Tf 50 652 Td (`Spell` is a data-driven runtime spell rather than a MonoBehaviour. When cast, it builds a) Tj ET
-BT /F1 10 Tf 50 639 Td (`SpellCastProfile` from the base definition, evaluates RPN expressions with the current) Tj ET
-BT /F1 10 Tf 50 626 Td (`wave` and player `power`, then applies each modifier in order. The profile controls damage,) Tj ET
-BT /F1 10 Tf 50 613 Td (mana cost, cooldown, projectile speed, projectile trajectory, repeated casts, split volleys,) Tj ET
-BT /F1 10 Tf 50 600 Td (secondary projectiles, and custom on-hit projectiles.) Tj ET
-BT /F1 10 Tf 50 578 Td (The player now owns a `SpellCaster` with up to four spell slots. `SpellUIContainer` keeps) Tj ET
-BT /F1 10 Tf 50 565 Td (the four slot UIs visible and synchronized with the inventory, while `SpellUI` shows each) Tj ET
-BT /F1 10 Tf 50 552 Td (slot's icon, mana cost, damage, cooldown, highlight state, and drop button. The reward) Tj ET
-BT /F1 10 Tf 50 539 Td (screen stores a pending reward in `GameManager`, previews its stats, and shows the slot) Tj ET
-BT /F1 10 Tf 50 526 Td (where the reward will be equipped or the spell it will replace. `EnemySpawner.NextWave`) Tj ET
-BT /F1 10 Tf 50 513 Td (accepts the pending reward before starting the next wave.) Tj ET
-BT /F1 10 Tf 50 491 Td (Player progression is loaded from `classes.json`. `PlayerController.ApplyWaveStats`) Tj ET
-BT /F1 10 Tf 50 478 Td (evaluates the mage class expressions for HP, mana, mana regeneration, spell power, and speed) Tj ET
-BT /F1 10 Tf 50 465 Td (each wave, preserving current HP and mana percentages when the maximum values change.) Tj ET
-BT /F2 14 Tf 50 443 Td (New Spells) Tj ET
-BT /F1 10 Tf 50 405 Td (- `damage_amp`: increases spell damage and mana cost multiplicatively.) Tj ET
-BT /F1 10 Tf 50 392 Td (- `speed_amp`: increases projectile speed multiplicatively.) Tj ET
-BT /F1 10 Tf 50 379 Td (- `doubler`: casts the modified spell a second time after a short delay, with higher mana) Tj ET
-BT /F1 10 Tf 50 366 Td (  cost and cooldown.) Tj ET
-BT /F1 10 Tf 50 353 Td (- `splitter`: casts the modified spell in two nearby directions.) Tj ET
-BT /F1 10 Tf 50 340 Td (- `chaos`: increases damage and changes the projectile trajectory to spiraling.) Tj ET
-BT /F1 10 Tf 50 327 Td (- `homing`: changes the projectile trajectory to homing while reducing damage and adding) Tj ET
-BT /F1 10 Tf 50 314 Td (  mana cost.) Tj ET
-BT /F1 10 Tf 50 301 Td (- `mana_stream`: an added modifier that lowers mana cost with a small cooldown penalty.) Tj ET
-BT /F1 10 Tf 50 288 Td (- `overclocked`: an added modifier that reduces cooldown and increases projectile speed,) Tj ET
-BT /F1 10 Tf 50 275 Td (  but costs more mana.) Tj ET
-BT /F1 10 Tf 50 262 Td (- `nova_burst`: an added behavior modifier that releases extra arcane shards from the hit) Tj ET
-BT /F1 10 Tf 50 249 Td (  point.) Tj ET
-BT /F1 10 Tf 50 227 Td (Optional base spells from the assignment are also supported: Magic Missile uses homing) Tj ET
-BT /F1 10 Tf 50 214 Td (projectiles, Arcane Spray creates a cone of short-lived bolts, and Arcane Blast creates) Tj ET
-BT /F1 10 Tf 50 201 Td (secondary projectiles when it hits.) Tj ET
-BT /F2 14 Tf 50 179 Td (Contributions) Tj ET
-BT /F1 10 Tf 50 141 Td (Todd Crandell implemented the JSON-driven spell definition pipeline, modifier evaluation,) Tj ET
-BT /F1 10 Tf 50 128 Td (reward generation, player stat scaling, and the final reward-slot/drop polish. The main) Tj ET
-BT /F1 10 Tf 50 115 Td (lesson was how much cleaner spell behavior becomes when the cast path builds a temporary) Tj ET
-BT /F1 10 Tf 50 102 Td (profile from data instead of baking every variation into separate classes.) Tj ET
-BT /F1 10 Tf 50 80 Td (ValerieVATS expanded the player spell system from a single spell into multiple spell slots) Tj ET
-BT /F1 10 Tf 50 67 Td (and added the visible slot UI with selection and drop affordances. The main lesson was) Tj ET
+BT /F1 10 Tf 50 748 Td (Additional modifiers:) Tj ET
+BT /F1 10 Tf 50 727 Td (- `mana_stream`: lowers mana cost with a small cooldown penalty.) Tj ET
+BT /F1 10 Tf 50 714 Td (- `overclocked`: lowers cooldown and increases projectile speed, but raises mana cost.) Tj ET
+BT /F1 10 Tf 50 701 Td (- `nova_burst`: adds behavior by releasing extra arcane shards from the hit point.) Tj ET
+BT /F2 14 Tf 50 680 Td (Contributions) Tj ET
+BT /F1 10 Tf 50 642 Td (Todd Crandell implemented the JSON-driven spell pipeline, RPN stat evaluation, modifier) Tj ET
+BT /F1 10 Tf 50 629 Td (application, random reward generation, wave-based player stat scaling, and the final) Tj ET
+BT /F1 10 Tf 50 616 Td (reward-slot/drop polish. I learned that the spell system is easier to extend when a cast) Tj ET
+BT /F1 10 Tf 50 603 Td (builds one temporary profile from data instead of putting every modifier into hard-coded) Tj ET
+BT /F1 10 Tf 50 590 Td (branches.) Tj ET
+BT /F1 10 Tf 50 569 Td (ValerieVATS expanded the spell system from one equipped spell to a four-slot inventory) Tj ET
+BT /F1 10 Tf 50 556 Td (and added the visible spell slot UI with selection and drop affordances. This work) Tj ET
+BT /F1 10 Tf 50 543 Td (showed how important it is to keep UI as a view of gameplay state, while `SpellCaster`) Tj ET
+BT /F1 10 Tf 50 530 Td (remains the source of truth for what the player actually has equipped.) Tj ET
+BT /F1 8 Tf 540 28 Td (3) Tj ET
 endstream
 endobj
 11 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 10 0 R >>
 endobj
-12 0 obj
-<< /Length 161 >>
-stream
-BT /F1 10 Tf 50 760 Td (keeping gameplay state and UI state synchronized without letting the UI become the source of) Tj ET
-BT /F1 10 Tf 50 747 Td (truth.) Tj ET
-endstream
-endobj
-13 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 12 0 R >>
-endobj
 xref
-0 14
+0 12
 0000000000 65535 f 
-0000000009 00000 n 
-0000000058 00000 n 
-0000000135 00000 n 
-0000000205 00000 n 
-0000000280 00000 n 
-0000000348 00000 n 
-0000004927 00000 n 
-0000005073 00000 n 
-0000009988 00000 n 
-0000010134 00000 n 
-0000014566 00000 n 
-0000014714 00000 n 
-0000014927 00000 n 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000134 00000 n 
+0000000204 00000 n 
+0000000279 00000 n 
+0000000347 00000 n 
+0000004252 00000 n 
+0000004398 00000 n 
+0000008623 00000 n 
+0000008769 00000 n 
+0000010247 00000 n 
 trailer
-<< /Size 14 /Root 1 0 R >>
+<< /Size 12 /Root 1 0 R >>
 startxref
-15075
+10395
 %%EOF

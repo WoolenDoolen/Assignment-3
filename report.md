@@ -2,167 +2,84 @@
 
 ## Architecture Diagram
 
-```mermaid
-classDiagram
-    GameManager --> RewardScreenManager : stores pending reward spell
-    RewardScreenManager --> SpellBuilder : generates wave reward
-    RewardScreenManager --> PlayerController : reads spell inventory
-    EnemySpawner --> PlayerController : starts waves and accepts rewards
-    PlayerController --> SpellCaster : owns mana and spell slots
-    PlayerController --> Hittable : scales max HP by wave
-    PlayerController --> ClassesJson : evaluates class stats
-    SpellCaster --> Spell : casts selected spell
-    SpellCaster --> SpellBuilder : creates starting spell
-    SpellUIContainer --> SpellCaster : shows four slots
-    SpellUIContainer --> SpellUI : refreshes slot views
-    SpellUI --> SpellCaster : checks drop state
-    SpellBuilder --> SpellsJson : loads base and modifier definitions
-    SpellBuilder --> SpellDefinition : stores JSON attributes
-    Spell --> SpellCastProfile : builds cast-time values
-    Spell --> ProjectileSpellData : configures projectile movement
-    Spell --> ProjectileManager : creates projectiles
-    Spell --> Damage : applies on-hit damage
+```text
+spells.json
+    |
+    v
+SpellBuilder -----> SpellDefinition
+    |                    |
+    v                    v
+SpellCaster ------> Spell --------> SpellCastProfile
+    |                 |                 |
+    |                 v                 v
+    |            ProjectileManager   ProjectileSpellData
+    |
+    v
+PlayerController ----> classes.json
+    |
+    v
+SpellUIContainer ----> SpellUI
 
-    class GameManager {
-        +Spell pendingSpellReward
-        +int pendingSpellRewardWave
-        +void SetPendingSpellReward(Spell spell, int rewardWave)
-        +void ClearPendingSpellReward()
-    }
-
-    class RewardScreenManager {
-        +GameObject rewardUI
-        -TextMeshProUGUI buttonText
-        -TextMeshProUGUI messageText
-        -SpellBuilder spellBuilder
-        +void Start()
-        +void Update()
-        -PlayerController GetPlayer()
-        -void EnsurePendingRewardSpell(PlayerController player)
-        -string GetMessage(PlayerController player)
-        -string GetRewardButtonText(PlayerController player)
-        -string GetRewardDescription(PlayerController player)
-        -string GetRewardSlotDescription(PlayerController player)
-    }
-
-    class SpellCaster {
-        +int max_spells
-        +int mana
-        +int max_mana
-        +int mana_reg
-        +int spell_power
-        +Spell spell
-        +int SelectedIndex
-        +int SlotCount
-        +IEnumerator ManaRegeneration()
-        +IEnumerator Cast(Vector3 where, Vector3 target)
-        +Spell GetCurrentSpell()
-        +Spell GetSpell(int slot)
-        +int GetEquippedSpellCount()
-        +bool CanDropSpell(int slot)
-        +int GetEquipSlotForNextSpell()
-        +bool SelectSpell(int slot)
-        +bool EquipSpell(Spell nextSpell)
-        +bool EquipSpellAt(Spell nextSpell, int slot)
-        +bool DropSpell(int slot)
-    }
-
-    class SpellBuilder {
-        -Dictionary~string, SpellDefinition~ definitions
-        -List~SpellDefinition~ baseSpells
-        -List~SpellDefinition~ modifierSpells
-        +Spell Build(SpellCaster owner)
-        +Spell BuildRandom(SpellCaster owner, int maxModifiers)
-        +Spell BuildReward(SpellCaster owner, int wave)
-        +Spell BuildWithModifiers(SpellCaster owner, string baseId, string[] modifierIds)
-        -void LoadDefinitions()
-        -string LoadSpellData()
-        -SpellDefinition GetDefinition(string id)
-    }
-
-    class SpellDefinition {
-        +string id
-        +JObject attributes
-        +bool IsBaseSpell()
-        +string GetString(string key, string fallback)
-        +JObject GetObject(string key)
-        +int EvaluateInt(string key, SpellCaster owner, int fallback)
-        +float EvaluateFloat(string key, SpellCaster owner, float fallback)
-        +static int EvaluateInt(JToken token, SpellCaster owner, int fallback)
-        +static float EvaluateFloat(JToken token, SpellCaster owner, float fallback)
-    }
-
-    class Spell {
-        +float last_cast
-        +SpellCaster owner
-        +Hittable.Team team
-        +string GetName()
-        +int GetManaCost()
-        +int GetDamage()
-        +string GetDescription()
-        +float GetCooldown()
-        +int GetIcon()
-        +string GetBaseId()
-        +List~string~ GetModifierNames()
-        +bool IsReady()
-        +IEnumerator Cast(Vector3 where, Vector3 target, Hittable.Team team)
-        -SpellCastProfile BuildProfile()
-        -void ApplyModifiers(SpellCastProfile profile)
-        -IEnumerator CastVolley(Vector3 where, Vector3 target, Hittable.Team hitTeam, SpellCastProfile profile)
-        -void CastProjectiles(Vector3 where, Vector3 direction, Hittable.Team hitTeam, SpellCastProfile profile)
-        -void OnHit(Hittable other, Vector3 impact, Hittable.Team hitTeam, SpellCastProfile profile)
-        -void CastSecondaryProjectiles(Vector3 impact, Hittable.Team hitTeam, SpellCastProfile profile)
-        -void CastOnHitProjectiles(Vector3 impact, Hittable.Team hitTeam, SpellCastProfile profile)
-    }
-
-    class SpellUIContainer {
-        +GameObject[] spellUIs
-        +PlayerController player
-        +void SelectSlot(int slot)
-        +void DropSlot(int slot)
-    }
-
-    class SpellUI {
-        +GameObject icon
-        +RectTransform cooldown
-        +TextMeshProUGUI manacost
-        +TextMeshProUGUI damage
-        +GameObject highlight
-        +GameObject dropbutton
-        +int slotIndex
-        +PlayerController player
-        +void Setup(SpellUIContainer container, PlayerController player, int slotIndex)
-        +void SetSpell(Spell spell)
-        +void DropSpell()
-    }
+GameManager ----> RewardScreenManager ----> SpellBuilder
+     ^                    |
+     |                    v
+EnemySpawner ------> PlayerController
 ```
 
-## Architecture Description
+The main flow is data-driven. `SpellBuilder` reads `spells.json`, stores every entry as a `SpellDefinition`, and separates base spells from modifier spells. `SpellCaster` owns the player's mana, spell power, selected slot, and four spell slots. When the player casts, the selected `Spell` builds a temporary `SpellCastProfile`, evaluates RPN expressions with `wave` and `power`, applies modifiers, and asks `ProjectileManager` to spawn the correct projectile behavior.
 
-Spell data is loaded from `Assets/Resources/spells.json` into `SpellDefinition` objects. `SpellBuilder` separates base spells from modifier spells, builds the player's starting Arcane Bolt, and generates random reward spells by combining one base spell with a random list of modifier definitions.
+Wave rewards are coordinated by `GameManager`, `RewardScreenManager`, and `EnemySpawner`. `RewardScreenManager` creates and previews a pending random spell after a wave. The player can select an existing slot or drop a spell, and `EnemySpawner.NextWave` equips the pending reward before the next wave starts.
 
-`Spell` is a data-driven runtime spell rather than a MonoBehaviour. When cast, it builds a `SpellCastProfile` from the base definition, evaluates RPN expressions with the current `wave` and player `power`, then applies each modifier in order. The profile controls damage, mana cost, cooldown, projectile speed, projectile trajectory, repeated casts, split volleys, secondary projectiles, and custom on-hit projectiles.
+## Added And Changed Classes
 
-The player now owns a `SpellCaster` with up to four spell slots. `SpellUIContainer` keeps the four slot UIs visible and synchronized with the inventory, while `SpellUI` shows each slot's icon, mana cost, damage, cooldown, highlight state, and drop button. The reward screen stores a pending reward in `GameManager`, previews its stats, and shows the slot where the reward will be equipped or the spell it will replace. `EnemySpawner.NextWave` accepts the pending reward before starting the next wave.
+`SpellDefinition`: stores each JSON spell entry and exposes helpers for string fields, nested objects, and RPN integer/float evaluation. Methods: `IsBaseSpell`, `GetString`, `GetObject`, `EvaluateInt`, and `EvaluateFloat`.
 
-Player progression is loaded from `classes.json`. `PlayerController.ApplyWaveStats` evaluates the mage class expressions for HP, mana, mana regeneration, spell power, and speed each wave, preserving current HP and mana percentages when the maximum values change.
+`ProjectileSpellData`: stores projectile sprite, trajectory, speed, and lifetime, including JSON loading with fallback values. Methods: `Copy` and `FromJson`.
 
-## New Spells
+`SpellCastProfile`: stores the final cast-time values after a base spell and its modifiers have been combined.
 
-- `damage_amp`: increases spell damage and mana cost multiplicatively.
-- `speed_amp`: increases projectile speed multiplicatively.
-- `doubler`: casts the modified spell a second time after a short delay, with higher mana cost and cooldown.
-- `splitter`: casts the modified spell in two nearby directions.
-- `chaos`: increases damage and changes the projectile trajectory to spiraling.
-- `homing`: changes the projectile trajectory to homing while reducing damage and adding mana cost.
-- `mana_stream`: an added modifier that lowers mana cost with a small cooldown penalty.
-- `overclocked`: an added modifier that reduces cooldown and increases projectile speed, but costs more mana.
-- `nova_burst`: an added behavior modifier that releases extra arcane shards from the hit point.
+`Spell`: now supports JSON-driven base spells and modifiers. It applies damage, mana, cooldown, speed, trajectory, delayed recasts, split volleys, spray projectiles, secondary projectiles, and on-hit projectile bursts. Methods: `GetName`, `GetManaCost`, `GetDamage`, `GetDescription`, `GetCooldown`, `GetIcon`, `GetBaseId`, `GetModifierNames`, `IsReady`, `Cast`, `BuildProfile`, `ApplyModifiers`, `CastVolley`, `CastProjectiles`, `CreateProjectile`, `OnHit`, `CastSecondaryProjectiles`, and `CastOnHitProjectiles`.
 
-Optional base spells from the assignment are also supported: Magic Missile uses homing projectiles, Arcane Spray creates a cone of short-lived bolts, and Arcane Blast creates secondary projectiles when it hits.
+`SpellBuilder`: loads `spells.json`, builds the starting Arcane Bolt, builds random reward spells, and can build specific base/modifier combinations for testing. Methods: `Build`, `BuildRandom`, `BuildReward`, `BuildWithModifiers`, `LoadDefinitions`, `LoadSpellData`, and `GetDefinition`.
+
+`SpellCaster`: now supports four spell slots, selected-slot casting, slot replacement, slot dropping, equipped-spell counts, and reward slot selection. Methods: `ManaRegeneration`, `Cast`, `GetCurrentSpell`, `GetSpell`, `GetEquippedSpellCount`, `CanDropSpell`, `GetEquipSlotForNextSpell`, `SelectSpell`, `EquipSpell`, `EquipSpellAt`, and `DropSpell`.
+
+`PlayerController`: evaluates wave-scaled class stats from `classes.json`, preserves health and mana percentages while scaling, exposes spell selection, equipping, and dropping to the UI. Methods: `StartLevel`, `EquipSpell`, `DropSpell`, `SelectSpell`, `EquipSpellAt`, `ApplyWaveStats`, `GetClassAttributes`, `LoadClassConfig`, and `EvaluateClassValue`.
+
+`RewardScreenManager`: previews the generated reward spell, shows damage/mana/cooldown, and tells the player which spell slot will receive or replace the reward. Methods: `Start`, `Update`, `GetPlayer`, `EnsurePendingRewardSpell`, `GetMessage`, `GetRewardButtonText`, `GetRewardDescription`, and `GetRewardSlotDescription`.
+
+`SpellUIContainer`: keeps all four spell slots visible, refreshes each slot, highlights the selected slot, and forwards slot/drop commands. Methods: `ConfigureSlots`, `ShowAllSlots`, `Refresh`, `SelectSlot0`, `SelectSlot1`, `SelectSlot2`, `SelectSlot3`, `SelectSlot`, and `DropSlot`.
+
+`SpellUI`: displays spell icon, mana cost, damage, cooldown fill, selection highlight, and enables the drop button only when dropping is valid. Methods: `Start`, `Setup`, `SetSpell`, `Update`, `RefreshText`, `BindDropButton`, `UpdateDropButton`, and `DropSpell`.
+
+`GameManager`: stores the pending reward spell and reward wave so one reward is generated per completed wave. Methods: `SetPendingSpellReward` and `ClearPendingSpellReward`.
+
+## Spell Descriptions
+
+Base spells:
+
+- `arcane_bolt`: a straight projectile with medium damage.
+- `magic_missile`: a low-damage homing projectile.
+- `arcane_blast`: a medium projectile that creates secondary bolts on impact.
+- `arcane_spray`: a cone of fast, short-lived low-damage projectiles.
+
+Required modifiers:
+
+- `damage_amp`: multiplies damage and mana cost.
+- `speed_amp`: multiplies projectile speed.
+- `doubler`: casts the modified spell again after a short delay.
+- `splitter`: casts the modified spell in two slightly different directions.
+- `chaos`: greatly increases damage and changes the projectile trajectory to spiraling.
+- `homing`: changes the trajectory to homing, reduces damage, and adds mana cost.
+
+Additional modifiers:
+
+- `mana_stream`: lowers mana cost with a small cooldown penalty.
+- `overclocked`: lowers cooldown and increases projectile speed, but raises mana cost.
+- `nova_burst`: adds behavior by releasing extra arcane shards from the hit point.
 
 ## Contributions
 
-Todd Crandell implemented the JSON-driven spell definition pipeline, modifier evaluation, reward generation, player stat scaling, and the final reward-slot/drop polish. The main lesson was how much cleaner spell behavior becomes when the cast path builds a temporary profile from data instead of baking every variation into separate classes.
+Todd Crandell implemented the JSON-driven spell pipeline, RPN stat evaluation, modifier application, random reward generation, wave-based player stat scaling, and the final reward-slot/drop polish. I learned that the spell system is easier to extend when a cast builds one temporary profile from data instead of putting every modifier into hard-coded branches.
 
-ValerieVATS expanded the player spell system from a single spell into multiple spell slots and added the visible slot UI with selection and drop affordances. The main lesson was keeping gameplay state and UI state synchronized without letting the UI become the source of truth.
+ValerieVATS expanded the spell system from one equipped spell to a four-slot inventory and added the visible spell slot UI with selection and drop affordances. This work showed how important it is to keep UI as a view of gameplay state, while `SpellCaster` remains the source of truth for what the player actually has equipped.
