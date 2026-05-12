@@ -5,21 +5,77 @@ public class SpellUIContainer : MonoBehaviour
     public GameObject[] spellUIs;
     public PlayerController player;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // we only have one spell (right now)
-        spellUIs[0].SetActive(true);
-        for(int i = 1; i< spellUIs.Length; ++i)
+        ShowAllSlots();
+        Refresh();
+    }
+
+    void Update()
+    {
+        ShowAllSlots();
+        Refresh();
+    }
+
+    void ShowAllSlots()
+    {
+        if (spellUIs == null) return;
+
+        for (int i = 0; i < spellUIs.Length; i++)
         {
-            spellUIs[i].SetActive(false);
+            if (spellUIs[i] != null)
+            {
+                spellUIs[i].SetActive(true);
+            }
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    //reload after changes
+    void Refresh()
     {
-        
+        if (spellUIs == null) return;
+        if (player == null) return;
+        if (player.spellcaster == null) return;
+
+        for (int i = 0; i < spellUIs.Length; i++)
+        {
+            //null checks
+            if (spellUIs[i] == null) continue;
+            SpellUI ui = spellUIs[i].GetComponent<SpellUI>();
+            if (ui == null) continue;
+
+            Spell spell = player.spellcaster.GetSpell(i);
+            ui.SetSpell(spell);
+
+            if (ui.highlight != null){ui.highlight.SetActive(i == player.spellcaster.SelectedIndex);}
+        }
     }
 
+    public void SelectSlot0()
+    {
+        SelectSlot(0);
+    }
+
+    public void SelectSlot1()
+    {
+        SelectSlot(1);
+    }
+
+    public void SelectSlot2()
+    {
+        SelectSlot(2);
+    }
+
+    public void SelectSlot3()
+    {
+        SelectSlot(3);
+    }
+
+    public void SelectSlot(int slot)
+    {
+        if (player == null) return;
+
+        player.SelectSpell(slot);
+        Refresh();
+    }
 }

@@ -20,14 +20,32 @@ public class SpellUI : MonoBehaviour
         last_text_update = 0;
     }
 
-    public void SetSpell(Spell spell)
-    {
+    public void SetSpell(Spell spell){
         this.spell = spell;
-        if (spell == null) return;
 
-        GameManager.Instance.spellIconManager.PlaceSprite(spell.GetIcon(), icon.GetComponent<Image>());
+        if (spell == null){
+            if (icon != null)
+            {icon.SetActive(false);}
+
+            if (manacost != null)
+            {manacost.text = "-";}
+
+            if (damage != null)
+            {damage.text = "-";}
+
+            if (cooldown != null)
+            {cooldown.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 0);}
+
+            return;
+        }
+
+        if (icon != null){
+            icon.SetActive(true);
+            GameManager.Instance.spellIconManager.PlaceSprite(spell.GetIcon(), icon.GetComponent<Image>());
+        }
         RefreshText();
         last_text_update = Time.time;
+        
     }
 
     // Update is called once per frame
