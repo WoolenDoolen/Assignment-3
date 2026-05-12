@@ -1,138 +1,168 @@
-# CMPM 121 Assignment 2 Report
+# CMPM 121 Assignment 3 Report
 
 ## Architecture Diagram
 
 ```mermaid
 classDiagram
-    GameManager --> EnemySpawner : tracks run state and enemies
-    EnemySpawner --> LevelSelector : reads selected level
-    LevelSelector --> Levels : stores levels.json entries
-    Levels --> Spawn : contains enemy spawn rules
-    EnemySpawner --> Enemy : reads enemies.json entries
-    EnemySpawner --> SpawnPoint : chooses spawn location
-    EnemySpawner --> EnemyController : assigns hp speed damage
-    EnemyController --> Hittable : takes damage and dies
-    PlayerController --> GameManager : reports player death
-    RewardScreenManager --> GameManager : shows continue or return button
-    WaveLabelController --> GameManager : shows wave and result text
+    GameManager --> RewardScreenManager : stores pending reward spell
+    RewardScreenManager --> SpellBuilder : generates wave reward
+    RewardScreenManager --> PlayerController : reads spell inventory
+    EnemySpawner --> PlayerController : starts waves and accepts rewards
+    PlayerController --> SpellCaster : owns mana and spell slots
+    PlayerController --> Hittable : scales max HP by wave
+    PlayerController --> ClassesJson : evaluates class stats
+    SpellCaster --> Spell : casts selected spell
+    SpellCaster --> SpellBuilder : creates starting spell
+    SpellUIContainer --> SpellCaster : shows four slots
+    SpellUIContainer --> SpellUI : refreshes slot views
+    SpellUI --> SpellCaster : checks drop state
+    SpellBuilder --> SpellsJson : loads base and modifier definitions
+    SpellBuilder --> SpellDefinition : stores JSON attributes
+    Spell --> SpellCastProfile : builds cast-time values
+    Spell --> ProjectileSpellData : configures projectile movement
+    Spell --> ProjectileManager : creates projectiles
+    Spell --> Damage : applies on-hit damage
 
     class GameManager {
-        +int wave
-        +int maxWaves
-        +string levelName
-        +string resultMessage
-        +int enemiesSpawned
-        +int enemiesDefeated
-        +void NewRun(string level, int waves)
-        +void ClearEnemies()
+        +Spell pendingSpellReward
+        +int pendingSpellRewardWave
+        +void SetPendingSpellReward(Spell spell, int rewardWave)
+        +void ClearPendingSpellReward()
     }
 
     class RewardScreenManager {
         +GameObject rewardUI
-        +private TextMeshProUGUI buttonText
-        +private TextMeshProUGUI messageText
+        -TextMeshProUGUI buttonText
+        -TextMeshProUGUI messageText
+        -SpellBuilder spellBuilder
         +void Start()
         +void Update()
-        +void GetMessage()
+        -PlayerController GetPlayer()
+        -void EnsurePendingRewardSpell(PlayerController player)
+        -string GetMessage(PlayerController player)
+        -string GetRewardButtonText(PlayerController player)
+        -string GetRewardDescription(PlayerController player)
+        -string GetRewardSlotDescription(PlayerController player)
     }
 
-    class WaveLabelController {
-        +TextMeshProUGUI tmp
-        +void Start()
-        +void Update()
+    class SpellCaster {
+        +int max_spells
+        +int mana
+        +int max_mana
+        +int mana_reg
+        +int spell_power
+        +Spell spell
+        +int SelectedIndex
+        +int SlotCount
+        +IEnumerator ManaRegeneration()
+        +IEnumerator Cast(Vector3 where, Vector3 target)
+        +Spell GetCurrentSpell()
+        +Spell GetSpell(int slot)
+        +int GetEquippedSpellCount()
+        +bool CanDropSpell(int slot)
+        +int GetEquipSlotForNextSpell()
+        +bool SelectSpell(int slot)
+        +bool EquipSpell(Spell nextSpell)
+        +bool EquipSpellAt(Spell nextSpell, int slot)
+        +bool DropSpell(int slot)
     }
 
-    class PlayerController {
-        +private Coroutine manaRoutine
+    class SpellBuilder {
+        -Dictionary~string, SpellDefinition~ definitions
+        -List~SpellDefinition~ baseSpells
+        -List~SpellDefinition~ modifierSpells
+        +Spell Build(SpellCaster owner)
+        +Spell BuildRandom(SpellCaster owner, int maxModifiers)
+        +Spell BuildReward(SpellCaster owner, int wave)
+        +Spell BuildWithModifiers(SpellCaster owner, string baseId, string[] modifierIds)
+        -void LoadDefinitions()
+        -string LoadSpellData()
+        -SpellDefinition GetDefinition(string id)
     }
 
-    class EnemySpawner {
-        +Dictionary<string, int> dict
-        +private List<Enemy> enemyConfig
-        +private bool spawning
-        +void ReturnToStart()
-        +Enemy FindEnemy(string name)
-        +SpawnPoint GetSpawnPoint(string location)
-        -private SpawnPoint ChooseSpawnPoint(string location)
-        -private bool SpawnLocationMatches(SpawnPoint spawnPoint, string location)
-        +void SpawnSingleEnemy(Spawn mob, Enemy mobEntity)
-        +IEnumerator SpawnEnemies(Spawn mob)
+    class SpellDefinition {
+        +string id
+        +JObject attributes
+        +bool IsBaseSpell()
+        +string GetString(string key, string fallback)
+        +JObject GetObject(string key)
+        +int EvaluateInt(string key, SpellCaster owner, int fallback)
+        +float EvaluateFloat(string key, SpellCaster owner, float fallback)
+        +static int EvaluateInt(JToken token, SpellCaster owner, int fallback)
+        +static float EvaluateFloat(JToken token, SpellCaster owner, float fallback)
     }
 
-    class Enemy {
-        +string name
-        +int sprite
-        +int hp
-        +int speed
-        +int damage
+    class Spell {
+        +float last_cast
+        +SpellCaster owner
+        +Hittable.Team team
+        +string GetName()
+        +int GetManaCost()
+        +int GetDamage()
+        +string GetDescription()
+        +float GetCooldown()
+        +int GetIcon()
+        +string GetBaseId()
+        +List~string~ GetModifierNames()
+        +bool IsReady()
+        +IEnumerator Cast(Vector3 where, Vector3 target, Hittable.Team team)
+        -SpellCastProfile BuildProfile()
+        -void ApplyModifiers(SpellCastProfile profile)
+        -IEnumerator CastVolley(Vector3 where, Vector3 target, Hittable.Team hitTeam, SpellCastProfile profile)
+        -void CastProjectiles(Vector3 where, Vector3 direction, Hittable.Team hitTeam, SpellCastProfile profile)
+        -void OnHit(Hittable other, Vector3 impact, Hittable.Team hitTeam, SpellCastProfile profile)
+        -void CastSecondaryProjectiles(Vector3 impact, Hittable.Team hitTeam, SpellCastProfile profile)
+        -void CastOnHitProjectiles(Vector3 impact, Hittable.Team hitTeam, SpellCastProfile profile)
     }
 
-    class LevelSelector {
-        +string Difficulty
-        +List<Levels> levelConfig
-        +private static LevelSelector theInstance
-        +LevelSelector Instance
-        +void ChangeLevel()
-        +Levels GetLevel(string name)
-        +List<Spawn> GetSpawn(string name)
-        +private LevelSelector()
+    class SpellUIContainer {
+        +GameObject[] spellUIs
+        +PlayerController player
+        +void SelectSlot(int slot)
+        +void DropSlot(int slot)
     }
 
-    class Levels {
-        +string name
-        +int waves
-        +List<Spawn> spawns
+    class SpellUI {
+        +GameObject icon
+        +RectTransform cooldown
+        +TextMeshProUGUI manacost
+        +TextMeshProUGUI damage
+        +GameObject highlight
+        +GameObject dropbutton
+        +int slotIndex
+        +PlayerController player
+        +void Setup(SpellUIContainer container, PlayerController player, int slotIndex)
+        +void SetSpell(Spell spell)
+        +void DropSpell()
     }
-
-    class Spawn {
-        +string enemy
-        +string count
-        +string hp
-        +string speed
-        +string damage
-        +string delay
-        +int[] sequence
-        +string location
-    }
-
-    class SpawnPoint {
-        +string kindString()
-    }
-
-    class EnemyController {
-        +private Unit unit
-        +private Vector3 last_position
-        +private float stuck_time
-        +private int turn_direction
-        +Vector2 PickMoveDirection(Vector2 direction)
-        +void TrackStuck()
-    }
-
 ```
 
 ## Architecture Description
 
-The level and enemy data are loaded from JSON into small data classes. `LevelSelector` stores the available level definitions, while `EnemySpawner` reads enemy definitions and uses the selected level's spawn rules to create enemies each wave. Spawn rules can choose enemy type, count, HP, damage, delay, sequence, and spawn location.
+Spell data is loaded from `Assets/Resources/spells.json` into `SpellDefinition` objects. `SpellBuilder` separates base spells from modifier spells, builds the player's starting Arcane Bolt, and generates random reward spells by combining one base spell with a random list of modifier definitions.
 
-`GameManager` stores the current game state, wave number, enemy count, and simple run stats. `EnemyController` handles enemy movement and attacks, while `PlayerController` starts the player stats and reports game over when the player dies. `RewardScreenManager` reuses the existing reward screen button for either continuing to the next wave or returning to the start after victory or defeat.
+`Spell` is a data-driven runtime spell rather than a MonoBehaviour. When cast, it builds a `SpellCastProfile` from the base definition, evaluates RPN expressions with the current `wave` and player `power`, then applies each modifier in order. The profile controls damage, mana cost, cooldown, projectile speed, projectile trajectory, repeated casts, split volleys, secondary projectiles, and custom on-hit projectiles.
 
-## Added Classes And Methods
+The player now owns a `SpellCaster` with up to four spell slots. `SpellUIContainer` keeps the four slot UIs visible and synchronized with the inventory, while `SpellUI` shows each slot's icon, mana cost, damage, cooldown, highlight state, and drop button. The reward screen stores a pending reward in `GameManager`, previews its stats, and shows the slot where the reward will be equipped or the spell it will replace. `EnemySpawner.NextWave` accepts the pending reward before starting the next wave.
 
-- Added classes `Levels` and `Spawn` for storing levels.json into a new class: `LevelSelector`.
-- Added class `Enemy` for storing enemies.json.
-- Added fields to `Enemy` for JSON enemy stats.
-- Added `speed` and `damage` fields to `Spawn`.
-- Added `LevelSelector.GetLevel`.
-- Added wave/end-state fields and helper methods in `GameManager`.
-- Added data-driven spawn helpers in `EnemySpawner`.
-- Added enemy `damage` support and movement stopping in `EnemyController`.
-- Updated `RewardScreenManager` and `WaveLabelController` to display wave, victory, and defeat states.
-- Added two new enemy types: "medusa" (in Endless mode) and "ghost" (in Medium difficulty) to enemies.json and levels.json.
+Player progression is loaded from `classes.json`. `PlayerController.ApplyWaveStats` evaluates the mage class expressions for HP, mana, mana regeneration, spell power, and speed each wave, preserving current HP and mana percentages when the maximum values change.
+
+## New Spells
+
+- `damage_amp`: increases spell damage and mana cost multiplicatively.
+- `speed_amp`: increases projectile speed multiplicatively.
+- `doubler`: casts the modified spell a second time after a short delay, with higher mana cost and cooldown.
+- `splitter`: casts the modified spell in two nearby directions.
+- `chaos`: increases damage and changes the projectile trajectory to spiraling.
+- `homing`: changes the projectile trajectory to homing while reducing damage and adding mana cost.
+- `mana_stream`: an added modifier that lowers mana cost with a small cooldown penalty.
+- `overclocked`: an added modifier that reduces cooldown and increases projectile speed, but costs more mana.
+- `nova_burst`: an added behavior modifier that releases extra arcane shards from the hit point.
+
+Optional base spells from the assignment are also supported: Magic Missile uses homing projectiles, Arcane Spray creates a cone of short-lived bolts, and Arcane Blast creates secondary projectiles when it hits.
 
 ## Contributions
 
-Todd Crandell fixed bugs and enemy movement behavior, including stopping enemies correctly while attacking and using configured enemy damage.
+Todd Crandell implemented the JSON-driven spell definition pipeline, modifier evaluation, reward generation, player stat scaling, and the final reward-slot/drop polish. The main lesson was how much cleaner spell behavior becomes when the cast path builds a temporary profile from data instead of baking every variation into separate classes.
 
-Branson Guan worked on the initial assignment implementation, including the level selection flow, level JSON structure, and wave spawning setup.
-
-Saurav Shah worked on the initial assignment implementation, including enemy JSON data, enemy type setup, additional enemy types, and spawn rule integration.
+ValerieVATS expanded the player spell system from a single spell into multiple spell slots and added the visible slot UI with selection and drop affordances. The main lesson was keeping gameplay state and UI state synchronized without letting the UI become the source of truth.
