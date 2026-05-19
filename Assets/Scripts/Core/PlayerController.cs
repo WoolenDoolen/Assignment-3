@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
 
     public SpellCaster spellcaster;
     public SpellUI spellui;
+    public List<Relic> relics;
 
     public int speed;
     public string playerClass = "mage";
@@ -19,6 +20,7 @@ public class PlayerController : MonoBehaviour
     public Unit unit;
     private Coroutine manaRoutine;
     private JObject classConfig;
+    private List<Relic> relicLibrary;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -30,6 +32,9 @@ public class PlayerController : MonoBehaviour
     public void StartLevel()
     {
         unit.movement = Vector2.zero;
+        relics = new List<Relic>();
+        relicLibrary = RelicLibrary.LoadAll();
+
         if (manaRoutine != null)
         {
             StopCoroutine(manaRoutine);
@@ -47,6 +52,46 @@ public class PlayerController : MonoBehaviour
         healthui.SetHealth(hp);
         manaui.SetSpellCaster(spellcaster);
         spellui.SetSpell(spellcaster.spell);
+    }
+
+    public List<Relic> GetRelicLibrary()
+    {
+        if (relicLibrary == null)
+        {
+            relicLibrary = RelicLibrary.LoadAll();
+        }
+
+        return relicLibrary;
+    }
+
+    public bool AddRelic(Relic relic)
+    {
+        if (relic == null) return false;
+
+        if (relics == null)
+        {
+            relics = new List<Relic>();
+        }
+
+        if (HasRelic(relic.id)) return false;
+
+        relics.Add(relic);
+        return true;
+    }
+
+    public bool HasRelic(string id)
+    {
+        if (relics == null || string.IsNullOrWhiteSpace(id)) return false;
+
+        foreach (Relic relic in relics)
+        {
+            if (relic != null && relic.id == id)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public bool EquipSpell(Spell spell)
