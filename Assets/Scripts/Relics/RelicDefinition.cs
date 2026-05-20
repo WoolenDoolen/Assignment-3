@@ -95,6 +95,11 @@ public class Relic
         return definition.GetDescription();
     }
 
+    public Relic Copy()
+    {
+        return new Relic(definition);
+    }
+
     public void Activate(PlayerController player)
     {
         owner = player;

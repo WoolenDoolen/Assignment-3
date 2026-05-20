@@ -77,7 +77,12 @@ public class EnemySpawner : MonoBehaviour
         {
             GameObject playerObject = GameManager.Instance.player;
             PlayerController player = playerObject == null ? null : playerObject.GetComponent<PlayerController>();
-            if (player != null && GameManager.Instance.pendingSpellReward != null)
+            if (player != null && GameManager.Instance.pendingRelicRewards != null)
+            {
+                player.AddRelic(GameManager.Instance.GetSelectedRelicReward());
+                GameManager.Instance.ClearPendingRelicRewards();
+            }
+            else if (player != null && GameManager.Instance.pendingSpellReward != null)
             {
                 player.EquipSpell(GameManager.Instance.pendingSpellReward);
                 GameManager.Instance.ClearPendingSpellReward();
@@ -102,6 +107,7 @@ public class EnemySpawner : MonoBehaviour
         GameManager.Instance.state = GameManager.GameState.PREGAME;
         GameManager.Instance.resultMessage = "";
         GameManager.Instance.ClearPendingSpellReward();
+        GameManager.Instance.ClearPendingRelicRewards();
         level_selector.gameObject.SetActive(true);
     }
 

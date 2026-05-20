@@ -92,6 +92,28 @@ public class PlayerController : MonoBehaviour
         return true;
     }
 
+    public List<Relic> BuildRelicRewardChoices(int count)
+    {
+        List<Relic> pool = new List<Relic>();
+        foreach (Relic relic in GetRelicLibrary())
+        {
+            if (relic != null && !HasRelic(relic.id))
+            {
+                pool.Add(relic);
+            }
+        }
+
+        List<Relic> choices = new List<Relic>();
+        while (choices.Count < count && pool.Count > 0)
+        {
+            int index = Random.Range(0, pool.Count);
+            choices.Add(pool[index].Copy());
+            pool.RemoveAt(index);
+        }
+
+        return choices;
+    }
+
     void ClearRelics()
     {
         if (relics != null)

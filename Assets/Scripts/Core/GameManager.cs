@@ -24,6 +24,9 @@ public class GameManager
     public int enemiesDefeated;
     public Spell pendingSpellReward;
     public int pendingSpellRewardWave;
+    public List<Relic> pendingRelicRewards;
+    public int pendingRelicRewardWave;
+    public int selectedRelicRewardIndex;
 
     private static GameManager theInstance;
     public static GameManager Instance {  get
@@ -74,6 +77,7 @@ public class GameManager
         enemiesDefeated = 0;
         resultMessage = "";
         ClearPendingSpellReward();
+        ClearPendingRelicRewards();
     }
 
     public void ClearEnemies()
@@ -98,6 +102,35 @@ public class GameManager
     {
         pendingSpellReward = null;
         pendingSpellRewardWave = 0;
+    }
+
+    public void SetPendingRelicRewards(List<Relic> relics, int rewardWave)
+    {
+        pendingRelicRewards = relics;
+        pendingRelicRewardWave = rewardWave;
+        selectedRelicRewardIndex = 0;
+    }
+
+    public void SelectPendingRelicReward(int index)
+    {
+        if (pendingRelicRewards == null || pendingRelicRewards.Count == 0) return;
+
+        selectedRelicRewardIndex = Mathf.Clamp(index, 0, pendingRelicRewards.Count - 1);
+    }
+
+    public Relic GetSelectedRelicReward()
+    {
+        if (pendingRelicRewards == null || pendingRelicRewards.Count == 0) return null;
+
+        SelectPendingRelicReward(selectedRelicRewardIndex);
+        return pendingRelicRewards[selectedRelicRewardIndex];
+    }
+
+    public void ClearPendingRelicRewards()
+    {
+        pendingRelicRewards = null;
+        pendingRelicRewardWave = 0;
+        selectedRelicRewardIndex = 0;
     }
 
     private GameManager()
