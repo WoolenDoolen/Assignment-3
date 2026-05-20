@@ -14,6 +14,7 @@ public class SpellCaster
 
     private List<Spell> spells;
     private int selectedIndex;
+    private int temporarySpellPower;
 
     public int SelectedIndex {get{return selectedIndex;}}
     public int SlotCount {get{return max_spells;}}
@@ -52,9 +53,30 @@ public class SpellCaster
         {
             mana -= activeSpell.GetManaCost();
             yield return activeSpell.Cast(where, target, team);
+            EventBus.Instance.DoSpellCast(this, activeSpell);
         }
 
         yield break;
+    }
+
+    public int GetSpellPower()
+    {
+        return spell_power + temporarySpellPower;
+    }
+
+    public void AddMana(int amount)
+    {
+        mana = Mathf.Clamp(mana + amount, 0, max_mana);
+    }
+
+    public void AddTemporarySpellPower(int amount)
+    {
+        temporarySpellPower += amount;
+    }
+
+    public void RemoveTemporarySpellPower(int amount)
+    {
+        temporarySpellPower = Mathf.Max(0, temporarySpellPower - amount);
     }
 
     public Spell GetCurrentSpell()

@@ -26,13 +26,25 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         unit = GetComponent<Unit>();
+        if (unit != null)
+        {
+            unit.OnMove += OnUnitMove;
+        }
         GameManager.Instance.player = gameObject;
+    }
+
+    void OnDestroy()
+    {
+        if (unit != null)
+        {
+            unit.OnMove -= OnUnitMove;
+        }
     }
 
     public void StartLevel()
     {
         unit.movement = Vector2.zero;
-        relics = new List<Relic>();
+        ClearRelics();
         relicLibrary = RelicLibrary.LoadAll();
 
         if (manaRoutine != null)
@@ -76,7 +88,24 @@ public class PlayerController : MonoBehaviour
         if (HasRelic(relic.id)) return false;
 
         relics.Add(relic);
+        relic.Activate(this);
         return true;
+    }
+
+    void ClearRelics()
+    {
+        if (relics != null)
+        {
+            foreach (Relic relic in relics)
+            {
+                if (relic != null)
+                {
+                    relic.Deactivate();
+                }
+            }
+        }
+
+        relics = new List<Relic>();
     }
 
     public bool HasRelic(string id)
@@ -173,7 +202,23 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (unit == null) return;
 
+        bool isMoving = unit.movement.sqrMagnitude > 0.001f &&
+                        (GameManager.Instance.state == GameManager.GameState.COUNTDOWN ||
+                         GameManager.Instance.state == GameManager.GameState.INWAVE);
+        EventBus.Instance.DoPlayerMovementTick(this, Time.deltaTime, isMoving);
+    }
+
+    void OnUnitMove(float distance)
+    {
+        if (GameManager.Instance.state != GameManager.GameState.COUNTDOWN &&
+            GameManager.Instance.state != GameManager.GameState.INWAVE)
+        {
+            return;
+        }
+
+        EventBus.Instance.DoPlayerMoved(this, distance);
     }
 
     void OnAttack(InputValue value)

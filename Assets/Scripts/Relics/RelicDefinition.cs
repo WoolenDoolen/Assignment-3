@@ -47,7 +47,7 @@ public class RelicDefinition
 
         Dictionary<string, int> variables = new Dictionary<string, int>();
         variables["wave"] = Mathf.Max(1, GameManager.Instance.wave);
-        variables["power"] = owner == null ? 0 : owner.spell_power;
+        variables["power"] = owner == null ? 0 : owner.GetSpellPower();
 
         try
         {
@@ -73,6 +73,9 @@ public class Relic
     public string name;
     public int sprite;
     public RelicDefinition definition;
+    private RelicTrigger trigger;
+    private RelicEffect effect;
+    private PlayerController owner;
 
     public Relic(RelicDefinition definition)
     {
@@ -92,9 +95,42 @@ public class Relic
         return definition.GetDescription();
     }
 
+    public void Activate(PlayerController player)
+    {
+        owner = player;
+        effect = RelicFactory.CreateEffect(definition);
+        trigger = RelicFactory.CreateTrigger(definition);
+        trigger.Register(this, player);
+    }
+
+    public void Deactivate()
+    {
+        if (trigger != null)
+        {
+            trigger.Unregister();
+        }
+
+        if (effect != null)
+        {
+            effect.Clear();
+        }
+
+        trigger = null;
+        effect = null;
+        owner = null;
+    }
+
+    public void Trigger()
+    {
+        if (effect != null && owner != null)
+        {
+            effect.Apply(this, owner);
+        }
+    }
+
     public bool IsActive()
     {
-        return false;
+        return effect != null && effect.IsActive();
     }
 }
 

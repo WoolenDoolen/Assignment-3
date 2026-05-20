@@ -55,7 +55,7 @@ public class SpellDefinition
 
         Dictionary<string, int> variables = new Dictionary<string, int>();
         variables["wave"] = GameManager.Instance.wave;
-        variables["power"] = owner == null ? 0 : owner.spell_power;
+        variables["power"] = owner == null ? 0 : owner.GetSpellPower();
 
         try
         {

@@ -14,11 +14,21 @@ public class Hittable
 
     public void Damage(Damage damage)
     {
+        if (hp <= 0) return;
+
         EventBus.Instance.DoDamage(owner.transform.position, damage, this);
         hp -= damage.amount;
+        if (team == Team.PLAYER && owner != null)
+        {
+            EventBus.Instance.DoPlayerDamaged(owner.GetComponent<PlayerController>(), damage);
+        }
         if (hp <= 0)
         {
             hp = 0;
+            if (team == Team.MONSTERS)
+            {
+                EventBus.Instance.DoEnemyKilled(this);
+            }
             OnDeath?.Invoke();
         }
     }
