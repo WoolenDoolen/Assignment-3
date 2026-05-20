@@ -20,6 +20,8 @@ public class EventBus
     public event Action<SpellCaster, Spell> OnSpellCast;
     public event Action<PlayerController, float> OnPlayerMoved;
     public event Action<PlayerController, float, bool> OnPlayerMovementTick;
+    public event Action<int> OnWaveStarted;
+    public event Action<int> OnWaveCompleted;
     
     public void DoDamage(Vector3 where, Damage dmg, Hittable target)
     {
@@ -49,6 +51,16 @@ public class EventBus
     public void DoPlayerMovementTick(PlayerController player, float deltaTime, bool isMoving)
     {
         OnPlayerMovementTick?.Invoke(player, deltaTime, isMoving);
+    }
+
+    public void DoWaveStarted(int wave)
+    {
+        OnWaveStarted?.Invoke(wave);
+    }
+
+    public void DoWaveCompleted(int wave)
+    {
+        OnWaveCompleted?.Invoke(wave);
     }
 
 }

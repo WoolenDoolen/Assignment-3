@@ -53,5 +53,46 @@
             "type": "gain-mana",
             "amount": "25"
         }
+    },
+    {
+        "name": "Ruby Heart",
+        "sprite": 4,
+        "trigger": {
+            "description": "When you finish a wave",
+            "type": "wave-complete"
+        },
+        "effect": {
+            "description": "you gain 10 max health.",
+            "type": "gain-max-health",
+            "amount": "10"
+        }
+    },
+    {
+        "name": "Wanderer's Coin",
+        "sprite": 5,
+        "trigger": {
+            "description": "After moving 40 units",
+            "type": "move-distance",
+            "amount": "40"
+        },
+        "effect": {
+            "description": "you gain 10 mana.",
+            "type": "gain-mana",
+            "amount": "10"
+        }
+    },
+    {
+        "name": "Sun Dial",
+        "sprite": 6,
+        "trigger": {
+            "description": "When a new wave starts",
+            "type": "wave-start"
+        },
+        "effect": {
+            "description": "your next spell gains 30 additional spellpower.",
+            "type": "gain-spellpower",
+            "amount": "30",
+            "until": "cast-spell"
+        }
     }
 ]

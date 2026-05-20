@@ -21,6 +21,9 @@ public static class RelicFactory
         if (type == "take-damage") return new TakeDamageRelicTrigger();
         if (type == "on-kill") return new EnemyKillRelicTrigger();
         if (type == "stand-still") return new StandStillRelicTrigger(definition);
+        if (type == "wave-start") return new WaveStartRelicTrigger();
+        if (type == "wave-complete") return new WaveCompleteRelicTrigger();
+        if (type == "move-distance") return new MoveDistanceRelicTrigger(definition);
         return new NullRelicTrigger(type);
     }
 
@@ -29,6 +32,7 @@ public static class RelicFactory
         string type = definition.GetEffectType();
         if (type == "gain-mana") return new GainManaRelicEffect(definition);
         if (type == "gain-spellpower") return new GainSpellPowerRelicEffect(definition);
+        if (type == "gain-max-health") return new GainMaxHealthRelicEffect(definition);
         return new NullRelicEffect(type);
     }
 }
@@ -140,6 +144,85 @@ public class StandStillRelicTrigger : RelicTrigger
     }
 }
 
+public class WaveStartRelicTrigger : RelicTrigger
+{
+    private Relic relic;
+
+    public void Register(Relic relic, PlayerController player)
+    {
+        this.relic = relic;
+        EventBus.Instance.OnWaveStarted += OnWaveStarted;
+    }
+
+    public void Unregister()
+    {
+        EventBus.Instance.OnWaveStarted -= OnWaveStarted;
+    }
+
+    void OnWaveStarted(int wave)
+    {
+        relic.Trigger();
+    }
+}
+
+public class WaveCompleteRelicTrigger : RelicTrigger
+{
+    private Relic relic;
+
+    public void Register(Relic relic, PlayerController player)
+    {
+        this.relic = relic;
+        EventBus.Instance.OnWaveCompleted += OnWaveCompleted;
+    }
+
+    public void Unregister()
+    {
+        EventBus.Instance.OnWaveCompleted -= OnWaveCompleted;
+    }
+
+    void OnWaveCompleted(int wave)
+    {
+        relic.Trigger();
+    }
+}
+
+public class MoveDistanceRelicTrigger : RelicTrigger
+{
+    private Relic relic;
+    private PlayerController player;
+    private float requiredDistance;
+    private float movedDistance;
+
+    public MoveDistanceRelicTrigger(RelicDefinition definition)
+    {
+        requiredDistance = Mathf.Max(0.5f, definition.Evaluate(definition.trigger, "amount", null, 25));
+    }
+
+    public void Register(Relic relic, PlayerController player)
+    {
+        this.relic = relic;
+        this.player = player;
+        EventBus.Instance.OnPlayerMoved += OnPlayerMoved;
+    }
+
+    public void Unregister()
+    {
+        EventBus.Instance.OnPlayerMoved -= OnPlayerMoved;
+    }
+
+    void OnPlayerMoved(PlayerController movedPlayer, float distance)
+    {
+        if (movedPlayer != player || GameManager.Instance.state != GameManager.GameState.INWAVE) return;
+
+        movedDistance += distance;
+        if (movedDistance >= requiredDistance)
+        {
+            movedDistance -= requiredDistance;
+            relic.Trigger();
+        }
+    }
+}
+
 public class GainManaRelicEffect : RelicEffect
 {
     private RelicDefinition definition;
@@ -155,6 +238,36 @@ public class GainManaRelicEffect : RelicEffect
 
         int amount = definition.Evaluate(definition.effect, "amount", player.spellcaster, 0);
         player.spellcaster.AddMana(amount);
+    }
+
+    public void Clear()
+    {
+    }
+
+    public bool IsActive()
+    {
+        return false;
+    }
+}
+
+public class GainMaxHealthRelicEffect : RelicEffect
+{
+    private RelicDefinition definition;
+
+    public GainMaxHealthRelicEffect(RelicDefinition definition)
+    {
+        this.definition = definition;
+    }
+
+    public void Apply(Relic relic, PlayerController player)
+    {
+        if (player == null || player.hp == null) return;
+
+        int amount = definition.Evaluate(definition.effect, "amount", player.spellcaster, 0);
+        if (amount > 0)
+        {
+            player.hp.SetMaxHP(player.hp.max_hp + amount);
+        }
     }
 
     public void Clear()

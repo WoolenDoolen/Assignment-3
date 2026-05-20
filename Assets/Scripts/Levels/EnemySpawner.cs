@@ -116,6 +116,7 @@ public class EnemySpawner : MonoBehaviour
         {
             player.ApplyWaveStats();
         }
+        EventBus.Instance.DoWaveStarted(GameManager.Instance.wave);
 
         GameManager.Instance.state = GameManager.GameState.COUNTDOWN;
         GameManager.Instance.countdown = 3;
@@ -145,6 +146,7 @@ public class EnemySpawner : MonoBehaviour
         }
 
         Levels lvl = LevelSelector.Instance.GetLevel(LevelSelector.Instance.Difficulty);
+        EventBus.Instance.DoWaveCompleted(dict["wave"]);
         if (lvl != null && lvl.waves > 0 && dict["wave"] >= lvl.waves)
         {
             GameManager.Instance.resultMessage = "You cleared " + lvl.name + "!";
