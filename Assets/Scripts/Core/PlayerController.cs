@@ -89,6 +89,7 @@ public class PlayerController : MonoBehaviour
 
         relics.Add(relic);
         relic.Activate(this);
+        EventBus.Instance.DoRelicPickedUp(relic);
         return true;
     }
 
@@ -128,6 +129,7 @@ public class PlayerController : MonoBehaviour
         }
 
         relics = new List<Relic>();
+        EventBus.Instance.DoRelicsCleared();
     }
 
     public bool HasRelic(string id)

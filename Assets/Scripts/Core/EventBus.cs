@@ -22,6 +22,8 @@ public class EventBus
     public event Action<PlayerController, float, bool> OnPlayerMovementTick;
     public event Action<int> OnWaveStarted;
     public event Action<int> OnWaveCompleted;
+    public event Action<Relic> OnRelicPickedUp;
+    public event Action OnRelicsCleared;
     
     public void DoDamage(Vector3 where, Damage dmg, Hittable target)
     {
@@ -61,6 +63,16 @@ public class EventBus
     public void DoWaveCompleted(int wave)
     {
         OnWaveCompleted?.Invoke(wave);
+    }
+
+    public void DoRelicPickedUp(Relic relic)
+    {
+        OnRelicPickedUp?.Invoke(relic);
+    }
+
+    public void DoRelicsCleared()
+    {
+        OnRelicsCleared?.Invoke();
     }
 
 }
