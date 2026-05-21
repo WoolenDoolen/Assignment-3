@@ -5,6 +5,7 @@ public class MenuSelectorController : MonoBehaviour
 {
     public TextMeshProUGUI label;
     public string level;
+    public string playerClass;
     public EnemySpawner spawner;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -22,11 +23,28 @@ public class MenuSelectorController : MonoBehaviour
     public void SetLevel(string text)
     {
         level = text;
-        label.text = text;
+        playerClass = "";
+        label.text = "Level: " + text;
+    }
+
+    public void SetClass(string text, bool selected)
+    {
+        playerClass = text;
+        level = "";
+        label.text = (selected ? "> " : "") + "Class: " + text;
     }
 
     public void StartLevel()
     {
-        spawner.StartLevel(level);
+        if (!string.IsNullOrWhiteSpace(level))
+        {
+            spawner.StartLevel(level);
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(playerClass))
+        {
+            spawner.SelectClass(playerClass);
+        }
     }
 }

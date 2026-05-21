@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Collections;
+using Newtonsoft.Json.Linq;
 
 
 public class Enemy
@@ -23,6 +24,8 @@ public class EnemySpawner : MonoBehaviour
     public SpawnPoint[] SpawnPoints;
     public Dictionary<string, int> dict;
     private List<Enemy> enemyConfig;
+    private List<MenuSelectorController> classSelectors;
+    private string selectedClass = "mage";
     private bool spawning;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -30,10 +33,23 @@ public class EnemySpawner : MonoBehaviour
     {
         int y = 40;
         int i = 0;
+        classSelectors = new List<MenuSelectorController>();
+        foreach (string className in LoadClassNames())
+        {
+            GameObject selector = Instantiate(button, level_selector.transform);
+            selector.transform.localPosition = new Vector3(-160, y - i);
+            MenuSelectorController menu = selector.GetComponent<MenuSelectorController>();
+            menu.spawner = this;
+            menu.SetClass(className, className == selectedClass);
+            classSelectors.Add(menu);
+            i += 40;
+        }
+
+        i = 0;
         foreach(Levels level in LevelSelector.Instance.levelConfig)
         {
             GameObject selector = Instantiate(button, level_selector.transform);
-            selector.transform.localPosition = new Vector3(0, y-i);
+            selector.transform.localPosition = new Vector3(160, y-i);
             selector.GetComponent<MenuSelectorController>().spawner = this;
             selector.GetComponent<MenuSelectorController>().SetLevel(level.name);
             i += 40;
@@ -64,11 +80,27 @@ public class EnemySpawner : MonoBehaviour
         Levels level = LevelSelector.Instance.GetLevel(levelname);
         GameManager.Instance.NewRun(levelname, level == null ? 0 : level.waves);
         // this is not nice: we should not have to be required to tell the player directly that the level is starting
-        GameManager.Instance.player.GetComponent<PlayerController>().StartLevel();
+        PlayerController player = GameManager.Instance.player.GetComponent<PlayerController>();
+        player.playerClass = selectedClass;
+        player.StartLevel();
         GameManager.Instance.state = GameManager.GameState.COUNTDOWN;
         dict["wave"] = 1;
         
         StartCoroutine(SpawnWave());
+    }
+
+    public void SelectClass(string className)
+    {
+        if (string.IsNullOrWhiteSpace(className)) return;
+
+        selectedClass = className;
+        foreach (MenuSelectorController selector in classSelectors)
+        {
+            if (selector != null)
+            {
+                selector.SetClass(selector.playerClass, selector.playerClass == selectedClass);
+            }
+        }
     }
 
     public void NextWave()
@@ -164,6 +196,53 @@ public class EnemySpawner : MonoBehaviour
             dict["wave"]++;
         }
         spawning = false;
+    }
+
+    List<string> LoadClassNames()
+    {
+        List<string> names = new List<string>();
+        string json = "";
+        TextAsset asset = Resources.Load<TextAsset>("classes");
+        if (asset != null)
+        {
+            json = asset.text;
+        }
+
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            string path = "./Assets/Resources/classes.json";
+            if (File.Exists(path))
+            {
+                json = File.ReadAllText(path);
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(json))
+        {
+            try
+            {
+                JObject classes = JObject.Parse(json);
+                foreach (JProperty playerClass in classes.Properties())
+                {
+                    names.Add(playerClass.Name);
+                }
+            }
+            catch
+            {
+                Debug.LogWarning("Could not parse classes.json for class selection.");
+            }
+        }
+
+        if (names.Count == 0)
+        {
+            names.Add(selectedClass);
+        }
+        else if (!names.Contains(selectedClass))
+        {
+            selectedClass = names[0];
+        }
+
+        return names;
     }
 
 
