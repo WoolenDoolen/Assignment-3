@@ -23,7 +23,7 @@ public class RewardScreenManager : MonoBehaviour
         messageText = message.AddComponent<TextMeshProUGUI>();
         messageText.alignment = TextAlignmentOptions.Center;
         messageText.fontSize = 24;
-        messageText.enableWordWrapping = true;
+        messageText.textWrappingMode = TextWrappingModes.Normal;
         messageText.color = Color.black;
 
         RectTransform rect = messageText.GetComponent<RectTransform>();
@@ -216,7 +216,7 @@ public class RewardScreenManager : MonoBehaviour
             relicButtonTexts[i] = label.AddComponent<TextMeshProUGUI>();
             relicButtonTexts[i].alignment = TextAlignmentOptions.Center;
             relicButtonTexts[i].fontSize = 18;
-            relicButtonTexts[i].enableWordWrapping = true;
+            relicButtonTexts[i].textWrappingMode = TextWrappingModes.Normal;
             relicButtonTexts[i].color = Color.black;
 
             RectTransform labelRect = relicButtonTexts[i].GetComponent<RectTransform>();
