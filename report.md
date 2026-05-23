@@ -1,85 +1,114 @@
-# CMPM 121 Assignment 3 Report
+# CMPM 121 Assignment 4 Report
 
 ## Architecture Diagram
 
 ```text
-spells.json
+relics.json
     |
     v
-SpellBuilder -----> SpellDefinition
-    |                    |
-    v                    v
-SpellCaster ------> Spell --------> SpellCastProfile
-    |                 |                 |
-    |                 v                 v
-    |            ProjectileManager   ProjectileSpellData
+RelicLibrary.LoadAll()
     |
     v
-PlayerController ----> classes.json
+RelicDefinition
+    |-- GetTriggerType()
+    |-- GetEffectType()
+    |-- GetDescription()
+    |-- Evaluate()
+    |-- GetString()
     |
     v
-SpellUIContainer ----> SpellUI
+Relic
+    |-- Activate()
+    |-- Deactivate()
+    |-- Trigger()
+    |-- IsActive()
+    |
+    v
+RelicFactory
+    |-- CreateTrigger()
+    |-- CreateEffect()
 
-GameManager ----> RewardScreenManager ----> SpellBuilder
-     ^                    |
-     |                    v
-EnemySpawner ------> PlayerController
+RelicTrigger implementations
+    |-- TakeDamageRelicTrigger.Register(), Unregister()
+    |-- EnemyKillRelicTrigger.Register(), Unregister()
+    |-- StandStillRelicTrigger.Register(), Unregister()
+    |-- WaveStartRelicTrigger.Register(), Unregister()
+    |-- WaveCompleteRelicTrigger.Register(), Unregister()
+    |-- MoveDistanceRelicTrigger.Register(), Unregister()
+
+RelicEffect implementations
+    |-- GainManaRelicEffect.Apply(), Clear(), IsActive()
+    |-- GainSpellPowerRelicEffect.Apply(), Clear(), IsActive()
+    |-- GainMaxHealthRelicEffect.Apply(), Clear(), IsActive()
+
+EventBus
+    |-- DoPlayerDamaged()
+    |-- DoEnemyKilled()
+    |-- DoSpellCast()
+    |-- DoPlayerMoved()
+    |-- DoPlayerMovementTick()
+    |-- DoWaveStarted()
+    |-- DoWaveCompleted()
+    |-- DoRelicPickedUp()
+    |-- DoRelicsCleared()
+
+EnemySpawner
+    |-- LoadClassNames()
+    |-- SelectClass()
+    |-- StartLevel()
+    |-- NextWave()
+    |-- SpawnWave()
+    |
+    v
+PlayerController
+    |-- StartLevel()
+    |-- AddRelic()
+    |-- BuildRelicRewardChoices()
+    |-- HasRelic()
+    |-- ApplyWaveStats()
+    |-- LoadClassConfig()
+    |-- EvaluateClassValue()
+    |
+    +-- reads classes.json
+
+RewardScreenManager
+    |-- EnsurePendingReward()
+    |-- EnsurePendingRelicRewards()
+    |-- ShouldOfferRelicReward()
+    |-- GetRelicRewardDescription()
+    |-- CreateRelicButtons()
+    |-- UpdateRelicButtons()
+
+RelicUIManager
+    |-- OnRelicPickedUp()
+    |-- ClearRelicViews()
+RelicUI
+    |-- Apply()
+    |-- Refresh()
 ```
 
-The main flow is data-driven. `SpellBuilder` reads `spells.json`, stores every entry as a `SpellDefinition`, and separates base spells from modifier spells. `SpellCaster` owns the player's mana, spell power, selected slot, and four spell slots. When the player casts, the selected `Spell` builds a temporary `SpellCastProfile`, evaluates RPN expressions with `wave` and `power`, applies modifiers, and asks `ProjectileManager` to spawn the correct projectile behavior.
+## Architecture Description
 
-Wave rewards are coordinated by `GameManager`, `RewardScreenManager`, and `EnemySpawner`. `RewardScreenManager` creates and previews a pending random spell after a wave. The player can select an existing slot or drop a spell, and `EnemySpawner.NextWave` equips the pending reward before the next wave starts.
+The relic system is data-driven. `RelicLibrary` reads `Resources/relics.json`, converts each JSON object into a `RelicDefinition`, and creates runtime `Relic` objects from those definitions. A relic does not hard-code its behavior directly. Instead, `RelicFactory` builds one trigger object and one effect object from the trigger and effect type strings in the JSON.
 
-## Added And Changed Classes
+Triggers are responsible for listening to gameplay events on `EventBus`. For example, the damage relic listens for `OnPlayerDamaged`, the kill relic listens for `OnEnemyKilled`, and the movement relic listens for `OnPlayerMoved`. When a trigger condition is satisfied, it calls `Relic.Trigger()`, which applies the relic effect to the owning `PlayerController`. Effects remain separate from triggers, so the same effect type can be reused by different conditions.
 
-`SpellDefinition`: stores each JSON spell entry and exposes helpers for string fields, nested objects, and RPN integer/float evaluation. Methods: `IsBaseSpell`, `GetString`, `GetObject`, `EvaluateInt`, and `EvaluateFloat`.
+Temporary effects are handled by the effect object that created them. `GainSpellPowerRelicEffect` can add temporary spell power and remove it when a later event occurs, such as movement or the next spell cast. Immediate effects, such as gaining mana or increasing max health, apply once and then report that they are not active.
 
-`ProjectileSpellData`: stores projectile sprite, trajectory, speed, and lifetime, including JSON loading with fallback values. Methods: `Copy` and `FromJson`.
+Relic rewards are integrated into the existing wave reward flow. `RewardScreenManager` offers relics after every third wave, asks `PlayerController.BuildRelicRewardChoices()` for three non-duplicate options, and stores those choices in `GameManager`. When the player advances to the next wave, `EnemySpawner.NextWave()` gives the selected relic to the player and activates it. `RelicUIManager` listens for relic pickup and clear events so the HUD stays synchronized with the player's relic list.
 
-`SpellCastProfile`: stores the final cast-time values after a base spell and its modifiers have been combined.
+Character classes are also data-driven. `EnemySpawner` reads the class names from `classes.json` and adds class buttons to the start menu. The selected class is copied to `PlayerController` when a level starts. `PlayerController.ApplyWaveStats()` reevaluates health, mana, mana regeneration, spell power, and speed each wave using the class RPN expressions and the current wave number. Health and mana preserve their current percentage when maximum values change.
 
-`Spell`: now supports JSON-driven base spells and modifiers. It applies damage, mana, cooldown, speed, trajectory, delayed recasts, split volleys, spray projectiles, secondary projectiles, and on-hit projectile bursts. Methods: `GetName`, `GetManaCost`, `GetDamage`, `GetDescription`, `GetCooldown`, `GetIcon`, `GetBaseId`, `GetModifierNames`, `IsReady`, `Cast`, `BuildProfile`, `ApplyModifiers`, `CastVolley`, `CastProjectiles`, `CreateProjectile`, `OnHit`, `CastSecondaryProjectiles`, and `CastOnHitProjectiles`.
+## Added Relics
 
-`SpellBuilder`: loads `spells.json`, builds the starting Arcane Bolt, builds random reward spells, and can build specific base/modifier combinations for testing. Methods: `Build`, `BuildRandom`, `BuildReward`, `BuildWithModifiers`, `LoadDefinitions`, `LoadSpellData`, and `GetDefinition`.
+`Ruby Heart`: triggers when a wave is completed and increases the player's maximum health by 10. This uses the new `wave-complete` trigger and the new `gain-max-health` effect.
 
-`SpellCaster`: now supports four spell slots, selected-slot casting, slot replacement, slot dropping, equipped-spell counts, and reward slot selection. Methods: `ManaRegeneration`, `Cast`, `GetCurrentSpell`, `GetSpell`, `GetEquippedSpellCount`, `CanDropSpell`, `GetEquipSlotForNextSpell`, `SelectSpell`, `EquipSpell`, `EquipSpellAt`, and `DropSpell`.
+`Wanderer's Coin`: triggers after the player moves 40 units during a wave and restores 10 mana. This uses the new `move-distance` trigger with the existing mana gain effect.
 
-`PlayerController`: evaluates wave-scaled class stats from `classes.json`, preserves health and mana percentages while scaling, exposes spell selection, equipping, and dropping to the UI. Methods: `StartLevel`, `EquipSpell`, `DropSpell`, `SelectSpell`, `EquipSpellAt`, `ApplyWaveStats`, `GetClassAttributes`, `LoadClassConfig`, and `EvaluateClassValue`.
-
-`RewardScreenManager`: previews the generated reward spell, shows damage/mana/cooldown, and tells the player which spell slot will receive or replace the reward. Methods: `Start`, `Update`, `GetPlayer`, `EnsurePendingRewardSpell`, `GetMessage`, `GetRewardButtonText`, `GetRewardDescription`, and `GetRewardSlotDescription`.
-
-`SpellUIContainer`: keeps all four spell slots visible, refreshes each slot, highlights the selected slot, and forwards slot/drop commands. Methods: `ConfigureSlots`, `ShowAllSlots`, `Refresh`, `SelectSlot0`, `SelectSlot1`, `SelectSlot2`, `SelectSlot3`, `SelectSlot`, and `DropSlot`.
-
-`SpellUI`: displays spell icon, mana cost, damage, cooldown fill, selection highlight, and enables the drop button only when dropping is valid. Methods: `Start`, `Setup`, `SetSpell`, `Update`, `RefreshText`, `BindDropButton`, `UpdateDropButton`, and `DropSpell`.
-
-`GameManager`: stores the pending reward spell and reward wave so one reward is generated per completed wave. Methods: `SetPendingSpellReward` and `ClearPendingSpellReward`.
-
-## Spell Descriptions
-
-Base spells:
-
-- `arcane_bolt`: a straight projectile with medium damage.
-- `magic_missile`: a low-damage homing projectile.
-- `arcane_blast`: a medium projectile that creates secondary bolts on impact.
-- `arcane_spray`: a cone of fast, short-lived low-damage projectiles.
-
-Required modifiers:
-
-- `damage_amp`: multiplies damage and mana cost.
-- `speed_amp`: multiplies projectile speed.
-- `doubler`: casts the modified spell again after a short delay.
-- `splitter`: casts the modified spell in two slightly different directions.
-- `chaos`: greatly increases damage and changes the projectile trajectory to spiraling.
-- `homing`: changes the trajectory to homing, reduces damage, and adds mana cost.
-
-Additional modifiers:
-
-- `mana_stream`: lowers mana cost with a small cooldown penalty.
-- `overclocked`: lowers cooldown and increases projectile speed, but raises mana cost.
-- `nova_burst`: adds behavior by releasing extra arcane shards from the hit point.
+`Sun Dial`: triggers when a new wave starts and gives the next spell 30 additional spell power. This uses the new `wave-start` trigger with the temporary spell power effect that clears after a spell is cast.
 
 ## Contributions
 
-Todd Crandell implemented the JSON-driven spell pipeline, RPN stat evaluation, modifier application, random reward generation, wave-based player stat scaling, and the final reward-slot/drop polish. I learned that the spell system is easier to extend when a cast builds one temporary profile from data instead of putting every modifier into hard-coded branches.
+Todd Crandell implemented the data-driven relic architecture, including `RelicDefinition`, `Relic`, `RelicLibrary`, trigger/effect factory creation, EventBus hooks, wave reward integration, class loading, class stat scaling, and the relic HUD. I learned that separating triggers from effects makes the system much easier to extend because new relics can be composed from small behavior pieces instead of becoming one-off branches.
 
-ValerieVATS expanded the spell system from one equipped spell to a four-slot inventory and added the visible spell slot UI with selection and drop affordances. This work showed how important it is to keep UI as a view of gameplay state, while `SpellCaster` remains the source of truth for what the player actually has equipped.
+Valerie Stratton expanded the player-facing systems that the relic work builds on, including the spell slot UI, slot selection, and drop controls from the previous assignment branch, then helped keep the reward and HUD flow understandable for players. I learned that gameplay state should stay in the controller/model layer while UI scripts reflect that state and forward player choices back into the system.

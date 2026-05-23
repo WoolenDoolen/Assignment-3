@@ -16,132 +16,152 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Courier >>
 endobj
 6 0 obj
-<< /Length 3853 >>
+<< /Length 4001 >>
 stream
-BT /F2 20 Tf 50 748 Td (CMPM 121 Assignment 3 Report) Tj ET
-BT /F2 14 Tf 50 704 Td (Architecture Diagram) Tj ET
-BT /F3 9 Tf 50 666 Td (spells.json) Tj ET
-BT /F3 9 Tf 50 655 Td (    |) Tj ET
-BT /F3 9 Tf 50 644 Td (    v) Tj ET
-BT /F3 9 Tf 50 633 Td (SpellBuilder -----> SpellDefinition) Tj ET
-BT /F3 9 Tf 50 622 Td (    |                    |) Tj ET
-BT /F3 9 Tf 50 611 Td (    v                    v) Tj ET
-BT /F3 9 Tf 50 600 Td (SpellCaster ------> Spell --------> SpellCastProfile) Tj ET
-BT /F3 9 Tf 50 589 Td (    |                 |                 |) Tj ET
-BT /F3 9 Tf 50 578 Td (    |                 v                 v) Tj ET
-BT /F3 9 Tf 50 567 Td (    |            ProjectileManager   ProjectileSpellData) Tj ET
-BT /F3 9 Tf 50 556 Td (    |) Tj ET
-BT /F3 9 Tf 50 545 Td (    v) Tj ET
-BT /F3 9 Tf 50 534 Td (PlayerController ----> classes.json) Tj ET
-BT /F3 9 Tf 50 523 Td (    |) Tj ET
-BT /F3 9 Tf 50 512 Td (    v) Tj ET
-BT /F3 9 Tf 50 501 Td (SpellUIContainer ----> SpellUI) Tj ET
-BT /F3 9 Tf 50 490 Td () Tj ET
-BT /F3 9 Tf 50 479 Td (GameManager ----> RewardScreenManager ----> SpellBuilder) Tj ET
-BT /F3 9 Tf 50 468 Td (     ^                    |) Tj ET
-BT /F3 9 Tf 50 457 Td (     |                    v) Tj ET
-BT /F3 9 Tf 50 446 Td (EnemySpawner ------> PlayerController) Tj ET
-BT /F1 10 Tf 50 427 Td (The main flow is data-driven. `SpellBuilder` reads `spells.json`, stores every entry as) Tj ET
-BT /F1 10 Tf 50 414 Td (a `SpellDefinition`, and separates base spells from modifier spells. `SpellCaster` owns) Tj ET
-BT /F1 10 Tf 50 401 Td (the player's mana, spell power, selected slot, and four spell slots. When the player) Tj ET
-BT /F1 10 Tf 50 388 Td (casts, the selected `Spell` builds a temporary `SpellCastProfile`, evaluates RPN) Tj ET
-BT /F1 10 Tf 50 375 Td (expressions with `wave` and `power`, applies modifiers, and asks `ProjectileManager` to) Tj ET
-BT /F1 10 Tf 50 362 Td (spawn the correct projectile behavior.) Tj ET
-BT /F1 10 Tf 50 341 Td (Wave rewards are coordinated by `GameManager`, `RewardScreenManager`, and) Tj ET
-BT /F1 10 Tf 50 328 Td (`EnemySpawner`. `RewardScreenManager` creates and previews a pending random spell after) Tj ET
-BT /F1 10 Tf 50 315 Td (a wave. The player can select an existing slot or drop a spell, and) Tj ET
-BT /F1 10 Tf 50 302 Td (`EnemySpawner.NextWave` equips the pending reward before the next wave starts.) Tj ET
-BT /F2 14 Tf 50 281 Td (Added And Changed Classes) Tj ET
-BT /F1 10 Tf 50 243 Td (`SpellDefinition`: stores each JSON spell entry and exposes helpers for string fields,) Tj ET
-BT /F1 10 Tf 50 230 Td (nested objects, and RPN integer/float evaluation. Methods: `IsBaseSpell`, `GetString`,) Tj ET
-BT /F1 10 Tf 50 217 Td (`GetObject`, `EvaluateInt`, and `EvaluateFloat`.) Tj ET
-BT /F1 10 Tf 50 196 Td (`ProjectileSpellData`: stores projectile sprite, trajectory, speed, and lifetime,) Tj ET
-BT /F1 10 Tf 50 183 Td (including JSON loading with fallback values. Methods: `Copy` and `FromJson`.) Tj ET
-BT /F1 10 Tf 50 162 Td (`SpellCastProfile`: stores the final cast-time values after a base spell and its) Tj ET
-BT /F1 10 Tf 50 149 Td (modifiers have been combined.) Tj ET
-BT /F1 10 Tf 50 128 Td (`Spell`: now supports JSON-driven base spells and modifiers. It applies damage, mana,) Tj ET
-BT /F1 10 Tf 50 115 Td (cooldown, speed, trajectory, delayed recasts, split volleys, spray projectiles,) Tj ET
-BT /F1 10 Tf 50 102 Td (secondary projectiles, and on-hit projectile bursts. Methods: `GetName`, `GetManaCost`,) Tj ET
-BT /F1 10 Tf 50 89 Td (`GetDamage`, `GetDescription`, `GetCooldown`, `GetIcon`, `GetBaseId`,) Tj ET
-BT /F1 10 Tf 50 76 Td (`GetModifierNames`, `IsReady`, `Cast`, `BuildProfile`, `ApplyModifiers`, `CastVolley`,) Tj ET
-BT /F1 10 Tf 50 63 Td (`CastProjectiles`, `CreateProjectile`, `OnHit`, `CastSecondaryProjectiles`, and) Tj ET
-BT /F1 8 Tf 540 28 Td (1) Tj ET
+BT /F2 18.00 Tf 54.00 742.00 Td (CMPM 121 Assignment 4 Report) Tj ET
+BT /F2 14.00 Tf 54.00 694.00 Td (Architecture Diagram) Tj ET
+BT /F3 8.00 Tf 54.00 665.00 Td (relics.json) Tj ET
+BT /F3 8.00 Tf 54.00 655.00 Td (    |) Tj ET
+BT /F3 8.00 Tf 54.00 645.00 Td (    v) Tj ET
+BT /F3 8.00 Tf 54.00 635.00 Td (RelicLibrary.LoadAll\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 625.00 Td (    |) Tj ET
+BT /F3 8.00 Tf 54.00 615.00 Td (    v) Tj ET
+BT /F3 8.00 Tf 54.00 605.00 Td (RelicDefinition) Tj ET
+BT /F3 8.00 Tf 54.00 595.00 Td (    |-- GetTriggerType\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 585.00 Td (    |-- GetEffectType\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 575.00 Td (    |-- GetDescription\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 565.00 Td (    |-- Evaluate\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 555.00 Td (    |-- GetString\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 545.00 Td (    |) Tj ET
+BT /F3 8.00 Tf 54.00 535.00 Td (    v) Tj ET
+BT /F3 8.00 Tf 54.00 525.00 Td (Relic) Tj ET
+BT /F3 8.00 Tf 54.00 515.00 Td (    |-- Activate\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 505.00 Td (    |-- Deactivate\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 495.00 Td (    |-- Trigger\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 485.00 Td (    |-- IsActive\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 475.00 Td (    |) Tj ET
+BT /F3 8.00 Tf 54.00 465.00 Td (    v) Tj ET
+BT /F3 8.00 Tf 54.00 455.00 Td (RelicFactory) Tj ET
+BT /F3 8.00 Tf 54.00 445.00 Td (    |-- CreateTrigger\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 435.00 Td (    |-- CreateEffect\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 425.00 Td () Tj ET
+BT /F3 8.00 Tf 54.00 415.00 Td (RelicTrigger implementations) Tj ET
+BT /F3 8.00 Tf 54.00 405.00 Td (    |-- TakeDamageRelicTrigger.Register\(\), Unregister\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 395.00 Td (    |-- EnemyKillRelicTrigger.Register\(\), Unregister\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 385.00 Td (    |-- StandStillRelicTrigger.Register\(\), Unregister\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 375.00 Td (    |-- WaveStartRelicTrigger.Register\(\), Unregister\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 365.00 Td (    |-- WaveCompleteRelicTrigger.Register\(\), Unregister\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 355.00 Td (    |-- MoveDistanceRelicTrigger.Register\(\), Unregister\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 345.00 Td () Tj ET
+BT /F3 8.00 Tf 54.00 335.00 Td (RelicEffect implementations) Tj ET
+BT /F3 8.00 Tf 54.00 325.00 Td (    |-- GainManaRelicEffect.Apply\(\), Clear\(\), IsActive\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 315.00 Td (    |-- GainSpellPowerRelicEffect.Apply\(\), Clear\(\), IsActive\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 305.00 Td (    |-- GainMaxHealthRelicEffect.Apply\(\), Clear\(\), IsActive\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 295.00 Td () Tj ET
+BT /F3 8.00 Tf 54.00 285.00 Td (EventBus) Tj ET
+BT /F3 8.00 Tf 54.00 275.00 Td (    |-- DoPlayerDamaged\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 265.00 Td (    |-- DoEnemyKilled\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 255.00 Td (    |-- DoSpellCast\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 245.00 Td (    |-- DoPlayerMoved\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 235.00 Td (    |-- DoPlayerMovementTick\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 225.00 Td (    |-- DoWaveStarted\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 215.00 Td (    |-- DoWaveCompleted\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 205.00 Td (    |-- DoRelicPickedUp\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 195.00 Td (    |-- DoRelicsCleared\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 185.00 Td () Tj ET
+BT /F3 8.00 Tf 54.00 175.00 Td (EnemySpawner) Tj ET
+BT /F3 8.00 Tf 54.00 165.00 Td (    |-- LoadClassNames\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 155.00 Td (    |-- SelectClass\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 145.00 Td (    |-- StartLevel\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 135.00 Td (    |-- NextWave\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 125.00 Td (    |-- SpawnWave\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 115.00 Td (    |) Tj ET
+BT /F3 8.00 Tf 54.00 105.00 Td (    v) Tj ET
+BT /F3 8.00 Tf 54.00 95.00 Td (PlayerController) Tj ET
+BT /F3 8.00 Tf 54.00 85.00 Td (    |-- StartLevel\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 75.00 Td (    |-- AddRelic\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 65.00 Td (    |-- BuildRelicRewardChoices\(\)) Tj ET
 endstream
 endobj
 7 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 6 0 R >>
 endobj
 8 0 obj
-<< /Length 4173 >>
+<< /Length 4716 >>
 stream
-BT /F1 10 Tf 50 748 Td (`CastOnHitProjectiles`.) Tj ET
-BT /F1 10 Tf 50 727 Td (`SpellBuilder`: loads `spells.json`, builds the starting Arcane Bolt, builds random) Tj ET
-BT /F1 10 Tf 50 714 Td (reward spells, and can build specific base/modifier combinations for testing. Methods:) Tj ET
-BT /F1 10 Tf 50 701 Td (`Build`, `BuildRandom`, `BuildReward`, `BuildWithModifiers`, `LoadDefinitions`,) Tj ET
-BT /F1 10 Tf 50 688 Td (`LoadSpellData`, and `GetDefinition`.) Tj ET
-BT /F1 10 Tf 50 667 Td (`SpellCaster`: now supports four spell slots, selected-slot casting, slot replacement,) Tj ET
-BT /F1 10 Tf 50 654 Td (slot dropping, equipped-spell counts, and reward slot selection. Methods:) Tj ET
-BT /F1 10 Tf 50 641 Td (`ManaRegeneration`, `Cast`, `GetCurrentSpell`, `GetSpell`, `GetEquippedSpellCount`,) Tj ET
-BT /F1 10 Tf 50 628 Td (`CanDropSpell`, `GetEquipSlotForNextSpell`, `SelectSpell`, `EquipSpell`, `EquipSpellAt`,) Tj ET
-BT /F1 10 Tf 50 615 Td (and `DropSpell`.) Tj ET
-BT /F1 10 Tf 50 594 Td (`PlayerController`: evaluates wave-scaled class stats from `classes.json`, preserves) Tj ET
-BT /F1 10 Tf 50 581 Td (health and mana percentages while scaling, exposes spell selection, equipping, and) Tj ET
-BT /F1 10 Tf 50 568 Td (dropping to the UI. Methods: `StartLevel`, `EquipSpell`, `DropSpell`, `SelectSpell`,) Tj ET
-BT /F1 10 Tf 50 555 Td (`EquipSpellAt`, `ApplyWaveStats`, `GetClassAttributes`, `LoadClassConfig`, and) Tj ET
-BT /F1 10 Tf 50 542 Td (`EvaluateClassValue`.) Tj ET
-BT /F1 10 Tf 50 521 Td (`RewardScreenManager`: previews the generated reward spell, shows damage/mana/cooldown,) Tj ET
-BT /F1 10 Tf 50 508 Td (and tells the player which spell slot will receive or replace the reward. Methods:) Tj ET
-BT /F1 10 Tf 50 495 Td (`Start`, `Update`, `GetPlayer`, `EnsurePendingRewardSpell`, `GetMessage`,) Tj ET
-BT /F1 10 Tf 50 482 Td (`GetRewardButtonText`, `GetRewardDescription`, and `GetRewardSlotDescription`.) Tj ET
-BT /F1 10 Tf 50 461 Td (`SpellUIContainer`: keeps all four spell slots visible, refreshes each slot, highlights) Tj ET
-BT /F1 10 Tf 50 448 Td (the selected slot, and forwards slot/drop commands. Methods: `ConfigureSlots`,) Tj ET
-BT /F1 10 Tf 50 435 Td (`ShowAllSlots`, `Refresh`, `SelectSlot0`, `SelectSlot1`, `SelectSlot2`, `SelectSlot3`,) Tj ET
-BT /F1 10 Tf 50 422 Td (`SelectSlot`, and `DropSlot`.) Tj ET
-BT /F1 10 Tf 50 401 Td (`SpellUI`: displays spell icon, mana cost, damage, cooldown fill, selection highlight,) Tj ET
-BT /F1 10 Tf 50 388 Td (and enables the drop button only when dropping is valid. Methods: `Start`, `Setup`,) Tj ET
-BT /F1 10 Tf 50 375 Td (`SetSpell`, `Update`, `RefreshText`, `BindDropButton`, `UpdateDropButton`, and) Tj ET
-BT /F1 10 Tf 50 362 Td (`DropSpell`.) Tj ET
-BT /F1 10 Tf 50 341 Td (`GameManager`: stores the pending reward spell and reward wave so one reward is) Tj ET
-BT /F1 10 Tf 50 328 Td (generated per completed wave. Methods: `SetPendingSpellReward` and) Tj ET
-BT /F1 10 Tf 50 315 Td (`ClearPendingSpellReward`.) Tj ET
-BT /F2 14 Tf 50 294 Td (Spell Descriptions) Tj ET
-BT /F1 10 Tf 50 256 Td (Base spells:) Tj ET
-BT /F1 10 Tf 50 235 Td (- `arcane_bolt`: a straight projectile with medium damage.) Tj ET
-BT /F1 10 Tf 50 222 Td (- `magic_missile`: a low-damage homing projectile.) Tj ET
-BT /F1 10 Tf 50 209 Td (- `arcane_blast`: a medium projectile that creates secondary bolts on impact.) Tj ET
-BT /F1 10 Tf 50 196 Td (- `arcane_spray`: a cone of fast, short-lived low-damage projectiles.) Tj ET
-BT /F1 10 Tf 50 175 Td (Required modifiers:) Tj ET
-BT /F1 10 Tf 50 154 Td (- `damage_amp`: multiplies damage and mana cost.) Tj ET
-BT /F1 10 Tf 50 141 Td (- `speed_amp`: multiplies projectile speed.) Tj ET
-BT /F1 10 Tf 50 128 Td (- `doubler`: casts the modified spell again after a short delay.) Tj ET
-BT /F1 10 Tf 50 115 Td (- `splitter`: casts the modified spell in two slightly different directions.) Tj ET
-BT /F1 10 Tf 50 102 Td (- `chaos`: greatly increases damage and changes the projectile trajectory to) Tj ET
-BT /F1 10 Tf 50 89 Td (  spiraling.) Tj ET
-BT /F1 10 Tf 50 76 Td (- `homing`: changes the trajectory to homing, reduces damage, and adds mana cost.) Tj ET
-BT /F1 8 Tf 540 28 Td (2) Tj ET
+BT /F3 8.00 Tf 54.00 742.00 Td (    |-- HasRelic\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 732.00 Td (    |-- ApplyWaveStats\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 722.00 Td (    |-- LoadClassConfig\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 712.00 Td (    |-- EvaluateClassValue\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 702.00 Td (    |) Tj ET
+BT /F3 8.00 Tf 54.00 692.00 Td (    +-- reads classes.json) Tj ET
+BT /F3 8.00 Tf 54.00 682.00 Td () Tj ET
+BT /F3 8.00 Tf 54.00 672.00 Td (RewardScreenManager) Tj ET
+BT /F3 8.00 Tf 54.00 662.00 Td (    |-- EnsurePendingReward\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 652.00 Td (    |-- EnsurePendingRelicRewards\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 642.00 Td (    |-- ShouldOfferRelicReward\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 632.00 Td (    |-- GetRelicRewardDescription\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 622.00 Td (    |-- CreateRelicButtons\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 612.00 Td (    |-- UpdateRelicButtons\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 602.00 Td () Tj ET
+BT /F3 8.00 Tf 54.00 592.00 Td (RelicUIManager) Tj ET
+BT /F3 8.00 Tf 54.00 582.00 Td (    |-- OnRelicPickedUp\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 572.00 Td (    |-- ClearRelicViews\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 562.00 Td (RelicUI) Tj ET
+BT /F3 8.00 Tf 54.00 552.00 Td (    |-- Apply\(\)) Tj ET
+BT /F3 8.00 Tf 54.00 542.00 Td (    |-- Refresh\(\)) Tj ET
+BT /F2 14.00 Tf 54.00 517.00 Td (Architecture Description) Tj ET
+BT /F1 10.50 Tf 54.00 488.00 Td (The relic system is data-driven. RelicLibrary reads Resources/relics.json, converts each JSON) Tj ET
+BT /F1 10.50 Tf 54.00 474.50 Td (object into a RelicDefinition, and creates runtime Relic objects from those definitions. A relic) Tj ET
+BT /F1 10.50 Tf 54.00 461.00 Td (does not hard-code its behavior directly. Instead, RelicFactory builds one trigger object and) Tj ET
+BT /F1 10.50 Tf 54.00 447.50 Td (one effect object from the trigger and effect type strings in the JSON.) Tj ET
+BT /F1 10.50 Tf 54.00 426.00 Td (Triggers are responsible for listening to gameplay events on EventBus. For example, the damage) Tj ET
+BT /F1 10.50 Tf 54.00 412.50 Td (relic listens for OnPlayerDamaged, the kill relic listens for OnEnemyKilled, and the movement) Tj ET
+BT /F1 10.50 Tf 54.00 399.00 Td (relic listens for OnPlayerMoved. When a trigger condition is satisfied, it calls) Tj ET
+BT /F1 10.50 Tf 54.00 385.50 Td (Relic.Trigger\(\), which applies the relic effect to the owning PlayerController. Effects remain) Tj ET
+BT /F1 10.50 Tf 54.00 372.00 Td (separate from triggers, so the same effect type can be reused by different conditions.) Tj ET
+BT /F1 10.50 Tf 54.00 350.50 Td (Temporary effects are handled by the effect object that created them. GainSpellPowerRelicEffect) Tj ET
+BT /F1 10.50 Tf 54.00 337.00 Td (can add temporary spell power and remove it when a later event occurs, such as movement or the) Tj ET
+BT /F1 10.50 Tf 54.00 323.50 Td (next spell cast. Immediate effects, such as gaining mana or increasing max health, apply once) Tj ET
+BT /F1 10.50 Tf 54.00 310.00 Td (and then report that they are not active.) Tj ET
+BT /F1 10.50 Tf 54.00 288.50 Td (Relic rewards are integrated into the existing wave reward flow. RewardScreenManager offers) Tj ET
+BT /F1 10.50 Tf 54.00 275.00 Td (relics after every third wave, asks PlayerController.BuildRelicRewardChoices\(\) for three non-) Tj ET
+BT /F1 10.50 Tf 54.00 261.50 Td (duplicate options, and stores those choices in GameManager. When the player advances to the next) Tj ET
+BT /F1 10.50 Tf 54.00 248.00 Td (wave, EnemySpawner.NextWave\(\) gives the selected relic to the player and activates it.) Tj ET
+BT /F1 10.50 Tf 54.00 234.50 Td (RelicUIManager listens for relic pickup and clear events so the HUD stays synchronized with the) Tj ET
+BT /F1 10.50 Tf 54.00 221.00 Td (player's relic list.) Tj ET
+BT /F1 10.50 Tf 54.00 199.50 Td (Character classes are also data-driven. EnemySpawner reads the class names from classes.json and) Tj ET
+BT /F1 10.50 Tf 54.00 186.00 Td (adds class buttons to the start menu. The selected class is copied to PlayerController when a) Tj ET
+BT /F1 10.50 Tf 54.00 172.50 Td (level starts. PlayerController.ApplyWaveStats\(\) reevaluates health, mana, mana regeneration,) Tj ET
+BT /F1 10.50 Tf 54.00 159.00 Td (spell power, and speed each wave using the class RPN expressions and the current wave number.) Tj ET
+BT /F1 10.50 Tf 54.00 145.50 Td (Health and mana preserve their current percentage when maximum values change.) Tj ET
+BT /F2 14.00 Tf 54.00 116.00 Td (Added Relics) Tj ET
+BT /F1 10.50 Tf 54.00 87.00 Td (Ruby Heart: triggers when a wave is completed and increases the player's maximum health by 10.) Tj ET
+BT /F1 10.50 Tf 54.00 73.50 Td (This uses the new wave-complete trigger and the new gain-max-health effect.) Tj ET
 endstream
 endobj
 9 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 8 0 R >>
 endobj
 10 0 obj
-<< /Length 1425 >>
+<< /Length 1861 >>
 stream
-BT /F1 10 Tf 50 748 Td (Additional modifiers:) Tj ET
-BT /F1 10 Tf 50 727 Td (- `mana_stream`: lowers mana cost with a small cooldown penalty.) Tj ET
-BT /F1 10 Tf 50 714 Td (- `overclocked`: lowers cooldown and increases projectile speed, but raises mana cost.) Tj ET
-BT /F1 10 Tf 50 701 Td (- `nova_burst`: adds behavior by releasing extra arcane shards from the hit point.) Tj ET
-BT /F2 14 Tf 50 680 Td (Contributions) Tj ET
-BT /F1 10 Tf 50 642 Td (Todd Crandell implemented the JSON-driven spell pipeline, RPN stat evaluation, modifier) Tj ET
-BT /F1 10 Tf 50 629 Td (application, random reward generation, wave-based player stat scaling, and the final) Tj ET
-BT /F1 10 Tf 50 616 Td (reward-slot/drop polish. I learned that the spell system is easier to extend when a cast) Tj ET
-BT /F1 10 Tf 50 603 Td (builds one temporary profile from data instead of putting every modifier into hard-coded) Tj ET
-BT /F1 10 Tf 50 590 Td (branches.) Tj ET
-BT /F1 10 Tf 50 569 Td (ValerieVATS expanded the spell system from one equipped spell to a four-slot inventory) Tj ET
-BT /F1 10 Tf 50 556 Td (and added the visible spell slot UI with selection and drop affordances. This work) Tj ET
-BT /F1 10 Tf 50 543 Td (showed how important it is to keep UI as a view of gameplay state, while `SpellCaster`) Tj ET
-BT /F1 10 Tf 50 530 Td (remains the source of truth for what the player actually has equipped.) Tj ET
-BT /F1 8 Tf 540 28 Td (3) Tj ET
+BT /F1 10.50 Tf 54.00 742.00 Td (Wanderer's Coin: triggers after the player moves 40 units during a wave and restores 10 mana.) Tj ET
+BT /F1 10.50 Tf 54.00 728.50 Td (This uses the new move-distance trigger with the existing mana gain effect.) Tj ET
+BT /F1 10.50 Tf 54.00 707.00 Td (Sun Dial: triggers when a new wave starts and gives the next spell 30 additional spell power.) Tj ET
+BT /F1 10.50 Tf 54.00 693.50 Td (This uses the new wave-start trigger with the temporary spell power effect that clears after a) Tj ET
+BT /F1 10.50 Tf 54.00 680.00 Td (spell is cast.) Tj ET
+BT /F2 14.00 Tf 54.00 650.50 Td (Contributions) Tj ET
+BT /F1 10.50 Tf 54.00 621.50 Td (Todd Crandell implemented the data-driven relic architecture, including RelicDefinition, Relic,) Tj ET
+BT /F1 10.50 Tf 54.00 608.00 Td (RelicLibrary, trigger/effect factory creation, EventBus hooks, wave reward integration, class) Tj ET
+BT /F1 10.50 Tf 54.00 594.50 Td (loading, class stat scaling, and the relic HUD. I learned that separating triggers from effects) Tj ET
+BT /F1 10.50 Tf 54.00 581.00 Td (makes the system much easier to extend because new relics can be composed from small behavior) Tj ET
+BT /F1 10.50 Tf 54.00 567.50 Td (pieces instead of becoming one-off branches.) Tj ET
+BT /F1 10.50 Tf 54.00 546.00 Td (Valerie Stratton expanded the player-facing systems that the relic work builds on, including the) Tj ET
+BT /F1 10.50 Tf 54.00 532.50 Td (spell slot UI, slot selection, and drop controls from the previous assignment branch, then) Tj ET
+BT /F1 10.50 Tf 54.00 519.00 Td (helped keep the reward and HUD flow understandable for players. I learned that gameplay state) Tj ET
+BT /F1 10.50 Tf 54.00 505.50 Td (should stay in the controller/model layer while UI scripts reflect that state and forward player) Tj ET
+BT /F1 10.50 Tf 54.00 492.00 Td (choices back into the system.) Tj ET
 endstream
 endobj
 11 0 obj
@@ -156,13 +176,13 @@ xref
 0000000204 00000 n 
 0000000279 00000 n 
 0000000347 00000 n 
-0000004252 00000 n 
-0000004398 00000 n 
-0000008623 00000 n 
-0000008769 00000 n 
-0000010247 00000 n 
+0000004400 00000 n 
+0000004546 00000 n 
+0000009314 00000 n 
+0000009460 00000 n 
+0000011374 00000 n 
 trailer
 << /Size 12 /Root 1 0 R >>
 startxref
-10395
+11522
 %%EOF
